@@ -44,6 +44,7 @@ namespace CondensedSpoilerLogger
             }
             Merge(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak, ItemNames.Left_Mothwing_Cloak, ItemNames.Right_Mothwing_Cloak, ItemNames.Split_Shade_Cloak);
             Merge(ItemNames.Mantis_Claw, ItemNames.Left_Mantis_Claw, ItemNames.Right_Mantis_Claw);
+            Merge(ItemNames.Crystal_Heart, ItemNames.Left_Crystal_Heart, ItemNames.Right_Crystal_Heart);
             Merge(ItemNames.Vengeful_Spirit, ItemNames.Shade_Soul);
             Merge(ItemNames.Desolate_Dive, ItemNames.Descending_Dark);
             Merge(ItemNames.Howling_Wraiths, ItemNames.Abyss_Shriek);

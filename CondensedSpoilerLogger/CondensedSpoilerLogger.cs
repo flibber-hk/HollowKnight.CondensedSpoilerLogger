@@ -26,11 +26,7 @@ namespace CondensedSpoilerLogger
         {
             Log("Initializing Mod...");
 
-            List<RandoLogger> loggers = (List<RandoLogger>)typeof(LogManager)
-                .GetField("loggers", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-                .GetValue(null);
-
-            loggers.Add(new CondensedSpoilerLog());
+            LogManager.AddLogger(new CondensedSpoilerLog());
         }
     }
 }
