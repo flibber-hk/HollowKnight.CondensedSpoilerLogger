@@ -20,17 +20,19 @@ namespace CondensedSpoilerLogger
             Dictionary<string, List<(string location, string item, string costText)>> placements = new();
             foreach (ItemPlacement placement in raw)
             {
-                string item = placement.item.Name;
-                if (placement.item.item is SplitCloakItem sc)
+                RandoItem item = placement.item;
+                if (item is PlaceholderItem { innerItem: RandoItem itm})
                 {
-                    item = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
-                }
-                if (item.StartsWith(RandomizerMod.RC.PlaceholderItem.Prefix))
-                {
-                    item = item.Substring(RandomizerMod.RC.PlaceholderItem.Prefix.Length);
+                    item = itm;
                 }
 
-                string loc = placement.location.Name;
+                string itemName = item.Name;
+                if (item.item is SplitCloakItem sc)
+                {
+                    itemName = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
+                }
+
+                string locationName = placement.location.Name;
 
                 string costText = string.Empty;
                 if (placement.location.costs != null)
@@ -38,12 +40,12 @@ namespace CondensedSpoilerLogger
                     costText = string.Join(", ", placement.location.costs.Select(cost => GetCostText(cost)));
                 }
 
-                if (!placements.TryGetValue(item, out List<(string, string, string)> locations))
+                if (!placements.TryGetValue(itemName, out List<(string, string, string)> locations))
                 {
-                    placements[item] = locations = new();
+                    placements[itemName] = locations = new();
                 }
 
-                locations.Add((loc, item, costText));
+                locations.Add((locationName, itemName, costText));
             }
 
             void Merge(string item1, params string[] items)
