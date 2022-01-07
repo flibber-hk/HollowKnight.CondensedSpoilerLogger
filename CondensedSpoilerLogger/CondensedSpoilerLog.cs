@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using RandomizerMod.Logging;
+using RandomizerMod.RC;
 using RandomizerCore;
+using RandomizerCore.Logic;
 using ItemChanger;
 
 namespace CondensedSpoilerLogger
@@ -15,20 +17,33 @@ namespace CondensedSpoilerLogger
         {
             List<ItemPlacement> raw = args.ctx.itemPlacements;
 
-            Dictionary<string, List<(string location, string item)>> placements = new();
+            Dictionary<string, List<(string location, string item, string costText)>> placements = new();
             foreach (ItemPlacement placement in raw)
             {
                 string item = placement.item.Name;
-                string loc = placement.location.Name;
+                if (placement.item.item is SplitCloakItem sc)
+                {
+                    item = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
+                }
                 if (item.StartsWith(RandomizerMod.RC.PlaceholderItem.Prefix))
                 {
                     item = item.Substring(RandomizerMod.RC.PlaceholderItem.Prefix.Length);
                 }
-                if (!placements.TryGetValue(item, out List<(string, string)> locations))
+
+                string loc = placement.location.Name;
+
+                string costText = string.Empty;
+                if (placement.location.costs != null)
+                {
+                    costText = string.Join(", ", placement.location.costs.Select(cost => GetCostText(cost)));
+                }
+
+                if (!placements.TryGetValue(item, out List<(string, string, string)> locations))
                 {
                     placements[item] = locations = new();
                 }
-                locations.Add((loc, item));
+
+                locations.Add((loc, item, costText));
             }
 
             void Merge(string item1, params string[] items)
@@ -36,13 +51,14 @@ namespace CondensedSpoilerLogger
                 if (!placements.ContainsKey(item1)) placements[item1] = new();
                 foreach (string item2 in items)
                 {
-                    if (placements.TryGetValue(item2, out List<(string, string)> others))
+                    if (placements.TryGetValue(item2, out List<(string, string, string)> others))
                     {
                         placements[item1].AddRange(others);
                     }
                 }
             }
-            Merge(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak, ItemNames.Left_Mothwing_Cloak, ItemNames.Right_Mothwing_Cloak, ItemNames.Split_Shade_Cloak);
+            Merge(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak, ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak",
+                ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak");
             Merge(ItemNames.Mantis_Claw, ItemNames.Left_Mantis_Claw, ItemNames.Right_Mantis_Claw);
             Merge(ItemNames.Crystal_Heart, ItemNames.Left_Crystal_Heart, ItemNames.Right_Crystal_Heart);
             Merge(ItemNames.Vengeful_Spirit, ItemNames.Shade_Soul);
@@ -55,14 +71,21 @@ namespace CondensedSpoilerLogger
             StringBuilder sb = new();
             void Add(string item)
             {
-                if (!placements.TryGetValue(item, out List<(string, string)> locations))
+                if (!placements.TryGetValue(item, out List<(string, string, string)> locations))
                 {
                     return;
                 }
 
-                foreach ((string loc, string itm) in locations)
+                foreach ((string loc, string itm, string costText) in locations)
                 {
-                    sb.AppendLine($"{itm} <---at---> {loc}");
+                    if (!string.IsNullOrEmpty(costText))
+                    {
+                        sb.AppendLine($"{itm} <---at---> {loc} ({costText})");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"{itm} <---at---> {loc}");
+                    }
                 }
             }
 
@@ -146,6 +169,20 @@ namespace CondensedSpoilerLogger
             sb.AppendLine();
 
             LogManager.Write(sb.ToString(), "CondensedSpoilerLog.json");
+        }
+
+        public static string GetCostText(LogicCost c)
+        {
+            if (c is LogicGeoCost lgc)
+            {
+                return $"{lgc.GeoAmount} GEO";
+            }
+            else if (c is SimpleCost sc)
+            {
+                return $"{sc.threshold} {sc.term.Name}";
+            }
+
+            return c.ToString();
         }
     }
 }
