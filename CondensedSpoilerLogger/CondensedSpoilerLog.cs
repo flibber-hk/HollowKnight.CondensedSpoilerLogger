@@ -17,7 +17,7 @@ namespace CondensedSpoilerLogger
         {
             List<ItemPlacement> raw = args.ctx.itemPlacements;
 
-            Dictionary<string, List<(string location, string item, string costText)>> placements = new();
+            Dictionary<string, List<(string location, string costText)>> placements = new();
             foreach (ItemPlacement placement in raw)
             {
                 RandoItem item = placement.item;
@@ -40,12 +40,12 @@ namespace CondensedSpoilerLogger
                     costText = string.Join(", ", placement.location.costs.Select(cost => GetCostText(cost)));
                 }
 
-                if (!placements.TryGetValue(itemName, out List<(string, string, string)> locations))
+                if (!placements.TryGetValue(itemName, out List<(string, string)> locations))
                 {
                     placements[itemName] = locations = new();
                 }
 
-                locations.Add((locationName, itemName, costText));
+                locations.Add((locationName, costText));
             }
 
             void Merge(string item1, params string[] items)
@@ -53,69 +53,111 @@ namespace CondensedSpoilerLogger
                 if (!placements.ContainsKey(item1)) placements[item1] = new();
                 foreach (string item2 in items)
                 {
-                    if (placements.TryGetValue(item2, out List<(string, string, string)> others))
+                    if (placements.TryGetValue(item2, out List<(string, string)> others))
                     {
                         placements[item1].AddRange(others);
                     }
                 }
             }
-            Merge(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak, ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak",
-                ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak");
-            Merge(ItemNames.Mantis_Claw, ItemNames.Left_Mantis_Claw, ItemNames.Right_Mantis_Claw);
-            Merge(ItemNames.Crystal_Heart, ItemNames.Left_Crystal_Heart, ItemNames.Right_Crystal_Heart);
+            Merge(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak);
+            Merge(ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak");
+            Merge(ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak");
+
             Merge(ItemNames.Vengeful_Spirit, ItemNames.Shade_Soul);
             Merge(ItemNames.Desolate_Dive, ItemNames.Descending_Dark);
             Merge(ItemNames.Howling_Wraiths, ItemNames.Abyss_Shriek);
             Merge(ItemNames.Dream_Nail, ItemNames.Dream_Gate, ItemNames.Awoken_Dream_Nail);
             Merge(ItemNames.Kingsoul, ItemNames.Queen_Fragment, ItemNames.King_Fragment, ItemNames.Void_Heart);
             Merge(ItemNames.Fragile_Strength, ItemNames.Unbreakable_Strength);
+            Merge(ItemNames.Fragile_Heart, ItemNames.Unbreakable_Heart);
+            Merge(ItemNames.Fragile_Greed, ItemNames.Unbreakable_Greed);
+            Merge("Grimmchild", ItemNames.Grimmchild1, ItemNames.Grimmchild2);
 
             StringBuilder sb = new();
-            void Add(string item)
+
+            void Add(string item, bool forceMulti = false)
             {
-                if (!placements.TryGetValue(item, out List<(string, string, string)> locations))
+                if (!placements.TryGetValue(item, out List<(string, string)> locations))
                 {
                     return;
                 }
 
-                foreach ((string loc, string itm, string costText) in locations)
+                if (locations.Count == 0)
                 {
+                    return;
+                }    
+                else if (locations.Count == 1 && !forceMulti)
+                {
+                    (string loc, string costText) = locations[0];
                     if (!string.IsNullOrEmpty(costText))
                     {
-                        sb.AppendLine($"{itm} <---at---> {loc} ({costText})");
+                        sb.AppendLine($"{item} <---at---> {loc} ({costText})");
                     }
                     else
                     {
-                        sb.AppendLine($"{itm} <---at---> {loc}");
+                        sb.AppendLine($"{item} <---at---> {loc}");
+                    }
+                }
+                else
+                {
+                    sb.AppendLine($"{item}:");
+                    foreach ((string loc, string costText) in locations)
+                    {
+                        if (!string.IsNullOrEmpty(costText))
+                        {
+                            sb.AppendLine($"- {loc} ({costText})");
+                        }
+                        else
+                        {
+                            sb.AppendLine($"- {loc}");
+                        }
                     }
                 }
             }
 
             sb.AppendLine("----------Major Progression:----------");
-            Add(ItemNames.Mothwing_Cloak);
-            Add(ItemNames.Mantis_Claw);
-            Add(ItemNames.Monarch_Wings);
-            Add(ItemNames.Crystal_Heart);
-            Add(ItemNames.Ismas_Tear);
-            Add(ItemNames.Dream_Nail);
-            Add(ItemNames.Swim);
+            Add(ItemNames.Mothwing_Cloak, forceMulti: true);
+            Add(ItemNames.Left_Mothwing_Cloak, forceMulti: true);
+            Add(ItemNames.Right_Mothwing_Cloak, forceMulti: true);
+            sb.AppendLine();
+            Add(ItemNames.Mantis_Claw, forceMulti: true);
+            Add(ItemNames.Left_Mantis_Claw, forceMulti: true);
+            Add(ItemNames.Right_Mantis_Claw, forceMulti: true);
+            sb.AppendLine();
+            Add(ItemNames.Monarch_Wings, forceMulti: true);
+            sb.AppendLine();
+            Add(ItemNames.Crystal_Heart, forceMulti: true);
+            Add(ItemNames.Left_Crystal_Heart, forceMulti: true);
+            Add(ItemNames.Right_Crystal_Heart, forceMulti: true);
+            sb.AppendLine();
+            Add(ItemNames.Ismas_Tear, forceMulti: true);
+            Add(ItemNames.Dream_Nail, forceMulti: true);
+            Add(ItemNames.Swim, forceMulti: true);
+            sb.AppendLine();
+
+            sb.AppendLine("----------Spells:----------");
+            Add(ItemNames.Vengeful_Spirit, forceMulti: true);
+            Add(ItemNames.Desolate_Dive, forceMulti: true);
+            Add(ItemNames.Howling_Wraiths, forceMulti: true);
+            Add(ItemNames.Focus);
+            sb.AppendLine();
+
+            if (args.gs.NoveltySettings.RandomizeNail)
+            {
+                sb.AppendLine("----------Nail Slashes:----------");
+            }
+            else
+            {
+                sb.AppendLine("----------Nail Arts:----------");
+            } 
+            Add(ItemNames.Cyclone_Slash);
+            Add(ItemNames.Great_Slash);
+            Add(ItemNames.Dash_Slash);
+            if (args.gs.NoveltySettings.RandomizeNail) sb.AppendLine();
             Add(ItemNames.Leftslash);
             Add(ItemNames.Rightslash);
             Add(ItemNames.Upslash);
             Add(ItemNames.Downslash);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Spells:----------");
-            Add(ItemNames.Vengeful_Spirit);
-            Add(ItemNames.Desolate_Dive);
-            Add(ItemNames.Howling_Wraiths);
-            Add(ItemNames.Focus);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Nail Arts:----------");
-            Add(ItemNames.Cyclone_Slash);
-            Add(ItemNames.Great_Slash);
-            Add(ItemNames.Dash_Slash);
             sb.AppendLine();
 
             sb.AppendLine("----------Dreamers:----------");
@@ -156,13 +198,15 @@ namespace CondensedSpoilerLogger
             sb.AppendLine();
 
             sb.AppendLine("----------Important Charms:----------");
-            Add(ItemNames.Grimmchild1);
-            Add(ItemNames.Grimmchild2);
+            Add("Grimmchild");
             Add(ItemNames.Dashmaster);
             Add(ItemNames.Shaman_Stone);
             Add(ItemNames.Spell_Twister);
-            Add(ItemNames.Fragile_Strength);
             Add(ItemNames.Quick_Slash);
+            Add(ItemNames.Fragile_Strength);
+            sb.AppendLine();
+
+            sb.AppendLine("----------Baldur Killers:----------");
             Add(ItemNames.Grubberflys_Elegy);
             Add(ItemNames.Glowing_Womb);
             Add(ItemNames.Spore_Shroom);
@@ -170,14 +214,14 @@ namespace CondensedSpoilerLogger
             Add(ItemNames.Mark_of_Pride);
             sb.AppendLine();
 
-            LogManager.Write(sb.ToString(), "CondensedSpoilerLog.json");
+            LogManager.Write(sb.ToString(), "CondensedSpoilerLog.txt");
         }
 
         public static string GetCostText(LogicCost c)
         {
             if (c is LogicGeoCost lgc)
             {
-                return $"{lgc.GeoAmount} GEO";
+                return $"{lgc.GeoAmount} Geo";
             }
             else if (c is SimpleCost sc)
             {
