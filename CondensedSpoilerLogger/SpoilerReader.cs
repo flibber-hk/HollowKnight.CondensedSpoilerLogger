@@ -8,12 +8,14 @@ using RandomizerMod.RC;
 using RandomizerCore;
 using RandomizerCore.Logic;
 using ItemChanger;
+using Modding;
 
 namespace CondensedSpoilerLogger
 {
     public class SpoilerReader
     {
         private readonly Dictionary<string, List<(string location, string costText)>> placements;
+        private readonly Dictionary<string, string> itemUINames = new();
 
         private int _indent;
         /// <summary>
@@ -63,6 +65,17 @@ namespace CondensedSpoilerLogger
             }
 
             ApplyMerges();
+            AddNotchCosts(args);
+        }
+
+        private void AddNotchCosts(LogArguments args)
+        {
+            if (!args.gs.MiscSettings.RandomizeNotchCosts) return;
+
+            foreach ((string charmName, int charmNum) in CharmIdList.CharmIdMap)
+            {
+                itemUINames.Add(charmName, $"{charmName} [{args.ctx.notchCosts[charmNum - 1]}]");
+            }    
         }
 
         private void ApplyMerges()
@@ -122,14 +135,16 @@ namespace CondensedSpoilerLogger
                 return;
             }
 
-            else if (locations.Count == 1 && !forceMulti)
+            string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
+
+            if (locations.Count == 1 && !forceMulti)
             {
                 (string loc, string costText) = locations[0];
-                sb.AppendLine($"{IndentString}{item} <---at---> {GetDisplayString(loc, costText)}");
+                sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(loc, costText)}");
             }
             else
             {
-                sb.AppendLine($"{IndentString}{item}:");
+                sb.AppendLine($"{IndentString}{itemUIName}:");
                 foreach ((string loc, string costText) in locations)
                 {
                     sb.AppendLine($"{IndentString}- {GetDisplayString(loc, costText)}");

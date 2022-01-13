@@ -56,11 +56,14 @@ namespace CondensedSpoilerLogger
             sr.AddItemToStringBuilder(sb, ItemNames.Cyclone_Slash);
             sr.AddItemToStringBuilder(sb, ItemNames.Great_Slash);
             sr.AddItemToStringBuilder(sb, ItemNames.Dash_Slash);
-            if (sr.HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash)) sb.AppendLine();
-            sr.AddItemToStringBuilder(sb, ItemNames.Leftslash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Rightslash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Upslash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Downslash);
+            if (sr.HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash))
+            {
+                sb.AppendLine();
+                sr.AddItemToStringBuilder(sb, ItemNames.Leftslash);
+                sr.AddItemToStringBuilder(sb, ItemNames.Rightslash);
+                sr.AddItemToStringBuilder(sb, ItemNames.Upslash);
+                sr.AddItemToStringBuilder(sb, ItemNames.Downslash);
+            }
             sb.AppendLine();
 
             sb.AppendLine("----------Dreamers:----------");
@@ -100,19 +103,25 @@ namespace CondensedSpoilerLogger
             sr.AddItemToStringBuilder(sb, ItemNames.City_Crest);
             sb.AppendLine();
 
-            sb.AppendLine("----------Important Charms:----------");
+            sb.AppendLine("----------Quest Charms:----------");
             sr.AddItemToStringBuilder(sb, "Grimmchild");
+            sr.AddItemToStringBuilder(sb, ItemNames.Spore_Shroom);
+            sr.AddItemToStringBuilder(sb, ItemNames.Defenders_Crest);
+            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Strength);
+            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Greed);
+            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Heart);
+            sb.AppendLine();
+
+            sb.AppendLine("----------Useful Charms:----------");
             sr.AddItemToStringBuilder(sb, ItemNames.Dashmaster);
             sr.AddItemToStringBuilder(sb, ItemNames.Shaman_Stone);
             sr.AddItemToStringBuilder(sb, ItemNames.Spell_Twister);
             sr.AddItemToStringBuilder(sb, ItemNames.Quick_Slash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Strength);
             sb.AppendLine();
 
             sb.AppendLine("----------Baldur Killers:----------");
             sr.AddItemToStringBuilder(sb, ItemNames.Grubberflys_Elegy);
             sr.AddItemToStringBuilder(sb, ItemNames.Glowing_Womb);
-            sr.AddItemToStringBuilder(sb, ItemNames.Spore_Shroom);
             sr.AddItemToStringBuilder(sb, ItemNames.Weaversong);
             sr.AddItemToStringBuilder(sb, ItemNames.Mark_of_Pride);
             sb.AppendLine();
