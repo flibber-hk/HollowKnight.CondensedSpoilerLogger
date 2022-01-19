@@ -117,6 +117,7 @@ namespace CondensedSpoilerLogger
             sr.AddItemToStringBuilder(sb, ItemNames.Shaman_Stone);
             sr.AddItemToStringBuilder(sb, ItemNames.Spell_Twister);
             sr.AddItemToStringBuilder(sb, ItemNames.Quick_Slash);
+            sr.AddItemToStringBuilder(sb, ItemNames.Wayward_Compass);
             sb.AppendLine();
 
             sb.AppendLine("----------Baldur Killers:----------");

@@ -127,8 +127,8 @@ namespace CondensedSpoilerLogger
         /// </summary>
         /// <param name="sb">The StringBuilder in use.</param>
         /// <param name="item">The name of the item.</param>
-        /// <param name="forceMulti">Whether to treat the item as having multiple locations, even if it does not.</param>
-        public void AddItemToStringBuilder(StringBuilder sb, string item, bool forceMulti = false)
+        /// <param name="forceMulti">If true or false, specify whether to treat the location as a multi location or a single location in the log.</param>
+        public void AddItemToStringBuilder(StringBuilder sb, string item, bool? forceMulti = null)
         {
             if (!placements.TryGetValue(item, out List<(string, string)> locations) || locations.Count == 0)
             {
@@ -136,11 +136,14 @@ namespace CondensedSpoilerLogger
             }
 
             string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
-
-            if (locations.Count == 1 && !forceMulti)
+            
+            bool multi = forceMulti ?? (locations.Count > 1);
+            if (!multi)
             {
-                (string loc, string costText) = locations[0];
-                sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(loc, costText)}");
+                foreach ((string loc, string costText) in locations)
+                {
+                    sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(loc, costText)}");
+                }
             }
             else
             {
