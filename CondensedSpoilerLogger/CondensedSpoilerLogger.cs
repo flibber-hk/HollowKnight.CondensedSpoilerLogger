@@ -27,6 +27,7 @@ namespace CondensedSpoilerLogger
             Log("Initializing Mod...");
 
             LogManager.AddLogger(new CondensedSpoilerLog());
+            LogManager.AddLogger(new NotchCostSpoiler());
         }
     }
 }

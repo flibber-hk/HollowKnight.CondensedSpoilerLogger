@@ -18,6 +18,9 @@ namespace CondensedSpoilerLogger
             SpoilerReader sr = new(args);
             StringBuilder sb = new();
 
+            sb.AppendLine($"Condensed spoiler log for seed: {args.gs.Seed}");
+            sb.AppendLine();
+
             sb.AppendLine("----------Major Progression:----------");
             sr.AddItemToStringBuilder(sb, ItemNames.Mothwing_Cloak, forceMulti: true);
             sr.AddItemToStringBuilder(sb, ItemNames.Left_Mothwing_Cloak, forceMulti: true);
