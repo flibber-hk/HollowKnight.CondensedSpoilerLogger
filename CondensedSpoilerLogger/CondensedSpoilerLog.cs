@@ -145,8 +145,7 @@ namespace CondensedSpoilerLogger
                     }
                     else
                     {
-                        addedAny = true;
-                        sr.AddItemToStringBuilder(categorySB, item);
+                        addedAny |= sr.AddItemToStringBuilder(categorySB, item);
                     }
                 }
                 categorySB.AppendLine();
