@@ -130,6 +130,33 @@ namespace CondensedSpoilerLogger
             sr.AddItemToStringBuilder(sb, ItemNames.Mark_of_Pride);
             sb.AppendLine();
 
+            foreach ((string name, Func<LogArguments, bool> test, List<string> items) in API.GetAdditionalCategories())
+            {
+                if (!test(args)) continue;
+
+                StringBuilder categorySB = new();
+                bool addedAny = false;
+                categorySB.AppendLine($"----------{name}:----------");
+                foreach (string item in items)
+                {
+                    if (string.IsNullOrEmpty(item))
+                    {
+                        categorySB.AppendLine();
+                    }
+                    else
+                    {
+                        addedAny = true;
+                        sr.AddItemToStringBuilder(categorySB, item);
+                    }
+                }
+                categorySB.AppendLine();
+
+                if (addedAny)
+                {
+                    sb.Append(categorySB.ToString());
+                }
+            }
+
             LogManager.Write(sb.ToString(), "CondensedSpoilerLog.txt");
         }
     }

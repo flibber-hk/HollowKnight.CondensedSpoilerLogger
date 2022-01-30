@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Modding;
+using MonoMod.ModInterop;
 using UnityEngine;
 using RandomizerMod.Logging;
 
@@ -15,6 +16,7 @@ namespace CondensedSpoilerLogger
         public CondensedSpoilerLogger() : base(null)
         {
             instance = this;
+            typeof(API.Export).ModInterop();
         }
         
         public override string GetVersion()
