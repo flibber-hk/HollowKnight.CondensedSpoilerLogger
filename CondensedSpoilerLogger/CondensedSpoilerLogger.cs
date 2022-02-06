@@ -30,6 +30,7 @@ namespace CondensedSpoilerLogger
 
             LogManager.AddLogger(new CondensedSpoilerLog());
             LogManager.AddLogger(new NotchCostSpoiler());
+            LogManager.AddLogger(new AreaSpoilerLog());
         }
     }
 }

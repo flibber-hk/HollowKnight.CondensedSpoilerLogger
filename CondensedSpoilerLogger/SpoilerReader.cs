@@ -14,7 +14,8 @@ namespace CondensedSpoilerLogger
 {
     public class SpoilerReader
     {
-        private readonly Dictionary<string, List<(string location, string costText)>> placements;
+        private readonly Dictionary<string, List<(string location, string costText)>> placementsByItem;
+        private readonly Dictionary<string, List<(string item, string costText)>> placementsByLocation;
         private readonly Dictionary<string, string> itemUINames = new();
 
         private int _indent;
@@ -33,7 +34,8 @@ namespace CondensedSpoilerLogger
         {
             List<ItemPlacement> raw = args.ctx.itemPlacements;
 
-            placements = new();
+            placementsByItem = new();
+            placementsByLocation = new();
             foreach (ItemPlacement placement in raw)
             {
                 RandoItem item = placement.Item;
@@ -56,12 +58,17 @@ namespace CondensedSpoilerLogger
                     costText = string.Join(", ", placement.Location.costs.Select(cost => GetCostText(cost)));
                 }
 
-                if (!placements.TryGetValue(itemName, out List<(string, string)> locations))
+                if (!placementsByItem.TryGetValue(itemName, out List<(string, string)> locations))
                 {
-                    placements[itemName] = locations = new();
+                    placementsByItem[itemName] = locations = new();
                 }
-
                 locations.Add((locationName, costText));
+
+                if (!placementsByLocation.TryGetValue(locationName, out List<(string, string)> items))
+                {
+                    placementsByLocation[locationName] = items = new();
+                }
+                items.Add((itemName, costText));
             }
 
             ApplyMerges();
@@ -80,19 +87,19 @@ namespace CondensedSpoilerLogger
 
         private void ApplyMerges()
         {
-            Merge(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak);
-            Merge(ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak");
-            Merge(ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak");
+            MergeItems(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak);
+            MergeItems(ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak");
+            MergeItems(ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak");
 
-            Merge(ItemNames.Vengeful_Spirit, ItemNames.Shade_Soul);
-            Merge(ItemNames.Desolate_Dive, ItemNames.Descending_Dark);
-            Merge(ItemNames.Howling_Wraiths, ItemNames.Abyss_Shriek);
-            Merge(ItemNames.Dream_Nail, ItemNames.Dream_Gate, ItemNames.Awoken_Dream_Nail);
-            Merge(ItemNames.Kingsoul, ItemNames.Queen_Fragment, ItemNames.King_Fragment, ItemNames.Void_Heart);
-            Merge(ItemNames.Fragile_Strength, ItemNames.Unbreakable_Strength);
-            Merge(ItemNames.Fragile_Heart, ItemNames.Unbreakable_Heart);
-            Merge(ItemNames.Fragile_Greed, ItemNames.Unbreakable_Greed);
-            Merge("Grimmchild", ItemNames.Grimmchild1, ItemNames.Grimmchild2);
+            MergeItems(ItemNames.Vengeful_Spirit, ItemNames.Shade_Soul);
+            MergeItems(ItemNames.Desolate_Dive, ItemNames.Descending_Dark);
+            MergeItems(ItemNames.Howling_Wraiths, ItemNames.Abyss_Shriek);
+            MergeItems(ItemNames.Dream_Nail, ItemNames.Dream_Gate, ItemNames.Awoken_Dream_Nail);
+            MergeItems(ItemNames.Kingsoul, ItemNames.Queen_Fragment, ItemNames.King_Fragment, ItemNames.Void_Heart);
+            MergeItems(ItemNames.Fragile_Strength, ItemNames.Unbreakable_Strength);
+            MergeItems(ItemNames.Fragile_Heart, ItemNames.Unbreakable_Heart);
+            MergeItems(ItemNames.Fragile_Greed, ItemNames.Unbreakable_Greed);
+            MergeItems("Grimmchild", ItemNames.Grimmchild1, ItemNames.Grimmchild2);
         }
 
         /// <summary>
@@ -101,16 +108,16 @@ namespace CondensedSpoilerLogger
         /// </summary>
         /// <param name="item1">The display name given to items from the group.</param>
         /// <param name="items">The items to be merged in.</param>
-        private void Merge(string item1, params string[] items)
+        private void MergeItems(string item1, params string[] items)
         {
-            if (!placements.ContainsKey(item1)) placements[item1] = new();
+            if (!placementsByItem.ContainsKey(item1)) placementsByItem[item1] = new();
             foreach (string item2 in items)
             {
-                if (placements.TryGetValue(item2, out List<(string, string)> others))
+                if (placementsByItem.TryGetValue(item2, out List<(string, string)> others))
                 {
-                    placements[item1].AddRange(others);
+                    placementsByItem[item1].AddRange(others);
                 }
-                placements.Remove(item2);
+                placementsByItem.Remove(item2);
             }
         }
 
@@ -119,7 +126,7 @@ namespace CondensedSpoilerLogger
         /// </summary>
         public bool HasRandomizedAny(params string[] items)
         {
-            return items.Any(item => placements.TryGetValue(item, out var value) && value.Count > 0);
+            return items.Any(item => placementsByItem.TryGetValue(item, out var value) && value.Count > 0);
         }
 
         /// <summary>
@@ -127,11 +134,11 @@ namespace CondensedSpoilerLogger
         /// </summary>
         /// <param name="sb">The StringBuilder in use.</param>
         /// <param name="item">The name of the item.</param>
-        /// <param name="forceMulti">If true or false, specify whether to treat the location as a multi location or a single location in the log.</param>
+        /// <param name="forceMulti">If true or false, specify whether to treat the item as a multi item or a single item in the log.</param>
         /// <returns>True if anything was added, false otherwise.</returns>
         public bool AddItemToStringBuilder(StringBuilder sb, string item, bool? forceMulti = null)
         {
-            if (!placements.TryGetValue(item, out List<(string, string)> locations) || locations.Count == 0)
+            if (!placementsByItem.TryGetValue(item, out List<(string, string)> locations) || locations.Count == 0)
             {
                 return false;
             }
@@ -152,6 +159,42 @@ namespace CondensedSpoilerLogger
                 foreach ((string loc, string costText) in locations)
                 {
                     sb.AppendLine($"{IndentString}- {GetDisplayString(loc, costText)}");
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Adds an entry for the given location to the StringBuilder, provided there is at least item there.
+        /// </summary>
+        /// <param name="sb">The StringBuilder in use.</param>
+        /// <param name="location">The name of the location.</param>
+        /// <param name="forceMulti">If true or false, specify whether to treat the location as a multi location or a single location in the log.</param>
+        /// <returns>True if anything was added, false otherwise.</returns>
+        public bool AddLocationToStringBuilder(StringBuilder sb, string location, bool? forceMulti = null)
+        {
+            if (!placementsByLocation.TryGetValue(location, out List<(string, string)> items) || items.Count == 0)
+            {
+                return false;
+            }
+
+            bool multi = forceMulti ?? (items.Count > 1);
+            if (!multi)
+            {
+                foreach ((string item, string costText) in items)
+                {
+                    string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
+                    sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(location, costText)}");
+                }
+            }
+            else
+            {
+                sb.AppendLine($"{IndentString}{location}:");
+                foreach ((string item, string costText) in items)
+                {
+                    string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
+                    sb.AppendLine($"{IndentString}- {GetDisplayString(itemUIName, costText)}");
                 }
             }
 
