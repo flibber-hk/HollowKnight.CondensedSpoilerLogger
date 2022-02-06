@@ -10,6 +10,8 @@ namespace CondensedSpoilerLogger
     {
         public override void Log(LogArguments args)
         {
+            if (!args.gs.MiscSettings.RandomizeNotchCosts) return;
+
             StringBuilder sb = new();
 
             sb.AppendLine($"Notch costs with seed: {args.gs.Seed}");
