@@ -36,7 +36,7 @@ namespace CondensedSpoilerLogger
             placements = new();
             foreach (ItemPlacement placement in raw)
             {
-                RandoItem item = placement.item;
+                RandoItem item = placement.Item;
                 if (item is PlaceholderItem { innerItem: RandoItem itm })
                 {
                     item = itm;
@@ -48,12 +48,12 @@ namespace CondensedSpoilerLogger
                     itemName = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
                 }
 
-                string locationName = placement.location.Name;
+                string locationName = placement.Location.Name;
 
                 string costText = string.Empty;
-                if (placement.location.costs != null)
+                if (placement.Location.costs != null)
                 {
-                    costText = string.Join(", ", placement.location.costs.Select(cost => GetCostText(cost)));
+                    costText = string.Join(", ", placement.Location.costs.Select(cost => GetCostText(cost)));
                 }
 
                 if (!placements.TryGetValue(itemName, out List<(string, string)> locations))
