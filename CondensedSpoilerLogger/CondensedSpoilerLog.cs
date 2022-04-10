@@ -115,6 +115,12 @@ namespace CondensedSpoilerLogger
             sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Heart);
             sb.AppendLine();
 
+            sb.AppendLine("----------Lifeblood Charms:----------");
+            sr.AddItemToStringBuilder(sb, ItemNames.Lifeblood_Heart);
+            sr.AddItemToStringBuilder(sb, ItemNames.Lifeblood_Core);
+            sr.AddItemToStringBuilder(sb, ItemNames.Jonis_Blessing);
+            sb.AppendLine();
+
             sb.AppendLine("----------Useful Charms:----------");
             sr.AddItemToStringBuilder(sb, ItemNames.Dashmaster);
             sr.AddItemToStringBuilder(sb, ItemNames.Shaman_Stone);
