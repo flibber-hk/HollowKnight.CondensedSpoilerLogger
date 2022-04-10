@@ -51,12 +51,7 @@ namespace CondensedSpoilerLogger
                 }
 
                 string locationName = placement.Location.Name;
-
-                string costText = string.Empty;
-                if (placement.Location.costs != null)
-                {
-                    costText = string.Join(", ", placement.Location.costs.Select(cost => GetCostText(cost)));
-                }
+                string costText = GetCostText(placement);
 
                 if (!placementsByItem.TryGetValue(itemName, out List<(string, string)> locations))
                 {
@@ -184,8 +179,7 @@ namespace CondensedSpoilerLogger
             {
                 foreach ((string item, string costText) in items)
                 {
-                    string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
-                    sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(location, costText)}");
+                    AddPlacementToStringBuilder(sb, location, item, costText);
                 }
             }
             else
@@ -201,7 +195,23 @@ namespace CondensedSpoilerLogger
             return true;
         }
 
-        private static string GetDisplayString(string loc, string costText)
+        /// <summary>
+        /// Add the given placement to a string builder.
+        /// </summary>
+        /// <param name="sb">The string builder.</param>
+        /// <param name="location">The location.</param>
+        /// <param name="item">The name of the item.</param>
+        /// <param name="costText">The cost text - usually generated using <see cref="GetCostText(ItemPlacement)"/> or <see cref="GetCostText(LogicCost)"/> if not null.</param>
+        /// <returns>Always returns true.</returns>
+        public bool AddPlacementToStringBuilder(StringBuilder sb, string location, string item, string costText = "")
+        {
+            string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
+            sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(location, costText)}");
+
+            return true;
+        }
+
+        public static string GetDisplayString(string loc, string costText)
         {
             if (!string.IsNullOrEmpty(costText))
             {
@@ -213,6 +223,23 @@ namespace CondensedSpoilerLogger
             }
         }
 
+        /// <summary>
+        /// Get the formatted cost text string for an item placement.
+        /// </summary>
+        public static string GetCostText(ItemPlacement placement)
+        {
+            string costText = string.Empty;
+            if (placement.Location.costs != null)
+            {
+                costText = string.Join(", ", placement.Location.costs.Select(cost => GetCostText(cost)));
+            }
+
+            return costText;
+        }
+
+        /// <summary>
+        /// Get the formatted cost text for a logic cost.
+        /// </summary>
         public static string GetCostText(LogicCost c)
         {
             if (c is LogicGeoCost lgc)
