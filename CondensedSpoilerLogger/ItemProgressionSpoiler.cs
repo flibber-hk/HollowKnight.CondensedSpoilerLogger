@@ -78,7 +78,7 @@ namespace CondensedSpoilerLogger
                 mu.Hook(pm);
             }
 
-            LogManager.Write(sb.ToString(), "ItemProgressionSpoilerLog.txt");
+            LogManager.Write(sb.ToString(), "OrderedItemProgressionSpoilerLog.txt");
         }
     }
 }
