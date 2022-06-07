@@ -19,7 +19,7 @@ namespace CondensedSpoilerLogger
             Randomizer randomizer = (Randomizer)args.randomizer;
             RandoModContext ctx = (RandoModContext)randomizer.ctx;
 
-            SetupPM(ctx, out ProgressionManager pm, out MainUpdater mu);
+            SetupPM(ctx, out _, out ProgressionManager pm, out MainUpdater mu);
 
             // Take item placements from the LogArguments
             List<ItemPlacement> itemPlacements = args.ctx.itemPlacements;
@@ -88,14 +88,14 @@ namespace CondensedSpoilerLogger
             Randomizer randomizer = (Randomizer)args.randomizer;
             RandoModContext ctx = (RandoModContext)randomizer.ctx;
 
-            SetupPM(ctx, out ProgressionManager pm, out MainUpdater mu);
+            SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             // All terms that might unlock something in a later sphere - either a location from a later sphere, or
             // a waypoint/vanilla placement/transition that the pm doesn't have yet
             HashSet<Term> GetTerms(int i)
             {
                 HashSet<Term> terms = new();
-                foreach (LogicWaypoint wp in ctx.LM.Waypoints)
+                foreach (LogicWaypoint wp in lm.Waypoints)
                 {
                     if (wp.CanGet(pm)) continue;
                     foreach (Term term in wp.GetTerms()) terms.Add(term);
@@ -151,12 +151,15 @@ namespace CondensedSpoilerLogger
             LogManager.Write(sb.ToString(), fileName);
         }
 
-        public void SetupPM(RandoModContext ctx, out ProgressionManager pm, out MainUpdater mu)
+        public void SetupPM(RandoModContext ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu)
         {
-            pm = new(ctx.LM, ctx);
-            mu = new(ctx.LM);
+            // Clone LM for thread safety reasons
+            lm = new(new LogicManagerBuilder(ctx.LM));
 
-            mu.AddPlacements(ctx.LM.Waypoints);
+            pm = new(lm, ctx);
+            mu = new(lm);
+
+            mu.AddPlacements(lm.Waypoints);
             mu.AddPlacements(ctx.Vanilla);
             if (ctx.transitionPlacements is not null)
             {
