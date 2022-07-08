@@ -13,8 +13,53 @@ using Modding;
 
 namespace CondensedSpoilerLogger
 {
+    internal static class AreaSpoilerLogExtensions
+    {
+        internal static IEnumerable<T> MoveMatchesToEnd<T>(this IEnumerable<T> iter, Func<T, bool> selector)
+        {
+            using IEnumerator<T> enumerator = iter.GetEnumerator();
+
+            List<T> matches = new();
+            while (enumerator.MoveNext())
+            {
+                T current = enumerator.Current;
+                if (!selector(current))
+                {
+                    yield return current;
+                }
+                else
+                {
+                    matches.Add(current);
+                }
+            }
+
+            foreach (T match in matches)
+            {
+                yield return match;
+            }
+        }
+    }
+
+
     internal class AreaSpoilerLog : RandoLogger
     {
+        internal const string Other = "Other";
+
+        private class AreaNameOrderingStringComparer : IComparer<string>
+        {
+            int IComparer<string>.Compare(string x, string y)
+            {
+                if (x == y) return 0;
+
+                if (x == Other) return 1;
+                if (y == Other) return -1;
+
+                return StringComparer.InvariantCulture.Compare(x, y);
+            }
+        }
+
+        private static readonly IComparer<string> AreaNameOrdering = new AreaNameOrderingStringComparer();
+
         public override void Log(LogArguments args)
         {
             SpoilerReader sr = new(args);
@@ -25,8 +70,8 @@ namespace CondensedSpoilerLogger
             foreach (ItemPlacement pmt in args.ctx.itemPlacements)
             {
                 string location = pmt.Location.Name;
-                string titledArea = pmt.Location.LocationDef.TitledArea;
-                string mapArea = pmt.Location.LocationDef.MapArea;
+                string titledArea = pmt.Location.LocationDef.TitledArea ?? Other;
+                string mapArea = pmt.Location.LocationDef.MapArea ?? Other;
 
                 if (!LocationGrouping.TryGetValue(mapArea, out var inMapArea))
                 {
@@ -46,9 +91,10 @@ namespace CondensedSpoilerLogger
 
             sb.AppendLine($"Area spoiler log for seed: {args.gs.Seed}");
             sb.AppendLine();
-            foreach (var mapAreaGroup in LocationGrouping.Values)
+            foreach (var mapAreaGroup in LocationGrouping.MoveMatchesToEnd(kvp => kvp.Key == Other).Select(kvp => kvp.Value))
             {
-                foreach ((string titledArea, HashSet<string> titledAreaLocations) in mapAreaGroup)
+                foreach ((string titledArea, HashSet<string> titledAreaLocations) 
+                    in mapAreaGroup.MoveMatchesToEnd(kvp => kvp.Key == Other))
                 {
                     bool anyNonMultiLocations = titledAreaLocations.Any(x => !multiLocations.Contains(x));
 
