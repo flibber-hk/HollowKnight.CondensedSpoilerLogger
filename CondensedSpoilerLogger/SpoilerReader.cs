@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using RandomizerMod.Logging;
 using RandomizerMod.RC;
 using RandomizerCore;
@@ -251,7 +251,18 @@ namespace CondensedSpoilerLogger
                 return $"{sc.threshold} {sc.term.Name}";
             }
 
-            return c.ToString();
+            string text = c.ToString();
+
+            // Match `LogicEnemyKillCost {count enemy}` => `count enemy`
+            Match match = Regex.Match(text, @"LogicEnemyKillCost \{(\d+) (\w+)\}");
+            if (match.Success)
+            {
+                string count = match.Groups[1].Value;
+                string enemy = match.Groups[2].Value;
+                return $"{count} {enemy}";
+            }
+
+            return text;
         }
     }
 }
