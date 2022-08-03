@@ -18,6 +18,9 @@ namespace CondensedSpoilerLogger
         private readonly Dictionary<string, List<(string item, string costText)>> placementsByLocation;
         private readonly Dictionary<string, string> itemUINames = new();
 
+        private string GetItemUIName(string item) => itemUINames.TryGetValue(item, out string uiName) ? uiName : Translation.Translate(item);
+        private string GetLocationUIName(string loc) => Translation.Translate(loc);
+
         private int _indent;
         /// <summary>
         /// Set to add the specified number of spaces to the start of each line.
@@ -76,7 +79,7 @@ namespace CondensedSpoilerLogger
 
             foreach ((string charmName, int charmNum) in CharmIdList.CharmIdMap)
             {
-                itemUINames.Add(charmName, $"{charmName} [{args.ctx.notchCosts[charmNum - 1]}]");
+                itemUINames.Add(charmName, $"{Translation.Translate(charmName)} [{args.ctx.notchCosts[charmNum - 1]}]");
             }    
         }
 
@@ -138,14 +141,15 @@ namespace CondensedSpoilerLogger
                 return false;
             }
 
-            string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
+            string itemUIName = GetItemUIName(item);
             
             bool multi = forceMulti ?? (locations.Count > 1);
             if (!multi)
             {
                 foreach ((string loc, string costText) in locations)
                 {
-                    sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(loc, costText)}");
+                    string locUI = GetLocationUIName(loc);
+                    sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(locUI, costText)}");
                 }
             }
             else
@@ -153,7 +157,8 @@ namespace CondensedSpoilerLogger
                 sb.AppendLine($"{IndentString}{itemUIName}:");
                 foreach ((string loc, string costText) in locations)
                 {
-                    sb.AppendLine($"{IndentString}- {GetDisplayString(loc, costText)}");
+                    string locUI = GetLocationUIName(loc);
+                    sb.AppendLine($"{IndentString}- {GetDisplayString(locUI, costText)}");
                 }
             }
 
@@ -184,10 +189,12 @@ namespace CondensedSpoilerLogger
             }
             else
             {
-                sb.AppendLine($"{IndentString}{location}:");
+                string locUI = GetLocationUIName(location);
+
+                sb.AppendLine($"{IndentString}{locUI}:");
                 foreach ((string item, string costText) in items)
                 {
-                    string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
+                    string itemUIName = GetItemUIName(item);
                     sb.AppendLine($"{IndentString}- {GetDisplayString(itemUIName, costText)}");
                 }
             }
@@ -205,8 +212,9 @@ namespace CondensedSpoilerLogger
         /// <returns>Always returns true.</returns>
         public bool AddPlacementToStringBuilder(StringBuilder sb, string location, string item, string costText = "")
         {
-            string itemUIName = itemUINames.TryGetValue(item, out string val) ? val : item;
-            sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(location, costText)}");
+            string itemUIName = GetItemUIName(item);
+            string locUI = GetLocationUIName(location);
+            sb.AppendLine($"{IndentString}{itemUIName} <---at---> {GetDisplayString(locUI, costText)}");
 
             return true;
         }

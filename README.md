@@ -13,3 +13,18 @@ It may throw false positives - for example, if it thinks that a mask shard could
 by other progression.
 
 Also adds an API for connections to add to the CondensedSpoilerLog.
+
+## Translation
+
+It is possible to modify the names that appear in the logs created by CondensedSpoilerLogger (except for the NotchCostSpoiler). To do so,
+create a file called `translation.json` in the same directory as this mod. That file should look like
+
+```
+{
+    "item_name_1": "translated_name_1",
+	"item_name_2": "translated_name_2",
+	...
+}
+```
+
+Item and location names can both appear in this file; if an item and location share a name, then they will both be translated.
