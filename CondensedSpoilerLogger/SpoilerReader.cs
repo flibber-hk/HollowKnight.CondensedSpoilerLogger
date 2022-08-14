@@ -18,6 +18,34 @@ namespace CondensedSpoilerLogger
         private readonly Dictionary<string, List<(string item, string costText)>> placementsByLocation;
         private readonly Dictionary<string, string> itemUINames = new();
 
+        public IEnumerable<string> EnumerateItems() => placementsByItem.Keys;
+        public IEnumerable<string> EnumerateLocations() => placementsByLocation.Keys;
+        public IEnumerable<string> LocationsForItem(string item)
+        {
+            if (placementsByItem.TryGetValue(item, out List<(string location, string costText)> locationInfo))
+            {
+                foreach ((string location, string _) in locationInfo)
+                {
+                    yield return location;
+                }
+            }
+            
+            yield break;
+        }
+        public IEnumerable<string> ItemsForLocation(string location)
+        {
+            if (placementsByLocation.TryGetValue(location, out List<(string item, string costText)> itemInfo))
+            {
+                foreach ((string item, string _) in itemInfo)
+                {
+                    yield return item;
+                }
+            }
+
+            yield break;
+        }
+
+
         private string GetItemUIName(string item) => itemUINames.TryGetValue(item, out string uiName) ? uiName : Translation.Translate(item);
         private string GetLocationUIName(string loc) => Translation.Translate(loc);
 

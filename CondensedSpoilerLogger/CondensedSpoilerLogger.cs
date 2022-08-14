@@ -31,6 +31,7 @@ namespace CondensedSpoilerLogger
             LogManager.AddLogger(new CondensedSpoilerLog());
             LogManager.AddLogger(new NotchCostSpoiler());
             LogManager.AddLogger(new AreaSpoilerLog());
+            LogManager.AddLogger(new ItemGroupSpoiler());
             LogManager.AddLogger(new ItemProgressionSpoiler());
         }
     }

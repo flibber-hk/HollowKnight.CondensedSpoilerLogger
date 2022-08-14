@@ -11,6 +11,8 @@ There is no guarantee that the order the items appear in this log reflects the o
 - ReducedItemProgressionSpoilerLog: The same as the ordered spoiler, except it tries to log only log items that it thinks might unlock something later.
 It may throw false positives - for example, if it thinks that a mask shard could possibly unlock later items but in fact those items are unlocked
 by other progression.
+- CollectedItemSpoiler: Collects locations with the same item and groups them together. Items which appear only once are placed
+at the bottom of the log.
 
 Also adds an API for connections to add to the CondensedSpoilerLog.
 
