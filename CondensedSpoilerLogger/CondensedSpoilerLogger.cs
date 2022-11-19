@@ -33,6 +33,7 @@ namespace CondensedSpoilerLogger
             LogManager.AddLogger(new AreaSpoilerLog());
             LogManager.AddLogger(new ItemGroupSpoiler());
             LogManager.AddLogger(new ItemProgressionSpoiler());
+            LogManager.AddLogger(new AreaTransitionSpoiler());
         }
     }
 }

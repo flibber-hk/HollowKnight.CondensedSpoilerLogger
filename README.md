@@ -13,6 +13,9 @@ It may throw false positives - for example, if it thinks that a mask shard could
 by other progression.
 - CollectedItemSpoiler: Collects locations with the same item and groups them together. Items which appear only once are placed
 at the bottom of the log.
+- SourceTransitionSpoiler / TargetTransitionSpoiler: If transitions are randomized, lists transition placements grouped by area.
+The first log groups placements by the source transition, the second groups placements by the target.
+For the most part, this distinction only matters when transitions are not coupled.
 
 Also adds an API for connections to add to the CondensedSpoilerLog.
 
