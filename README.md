@@ -19,6 +19,19 @@ For the most part, this distinction only matters when transitions are not couple
 
 Also adds an API for connections to add to the CondensedSpoilerLog.
 
+## Write logs button
+
+After randomization is successful, the start randomizer page will display a button to Write Logs immediately. This will write all spoiler
+logs to the `Randomizer 4/Recent` directory. The logs generated in this way may be inaccurate if playing a mode other than regular
+randomizer (such as Multiworld).
+
+This option can be disabled in the global settings.
+
+## Global Settings
+
+Any of the logs can be disabled in the global settings file. Once a log has been written once, its filename should appear in the
+global settings. Set the value to `false` in order to prevent writing that log in future.
+
 ## Translation
 
 It is possible to modify the names that appear in the logs created by CondensedSpoilerLogger (except for the NotchCostSpoiler). To do so,
