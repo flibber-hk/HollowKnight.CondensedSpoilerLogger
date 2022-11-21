@@ -30,6 +30,8 @@ namespace CondensedSpoilerLogger
             LogManager.AddLogger(new ItemGroupSpoiler());
             LogManager.AddLogger(new ItemProgressionSpoiler());
             LogManager.AddLogger(new AreaTransitionSpoiler());
+
+            CslMenu.Hook();
         }
     }
 }
