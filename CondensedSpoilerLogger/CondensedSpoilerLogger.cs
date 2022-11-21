@@ -5,10 +5,18 @@ using CondensedSpoilerLogger.Loggers;
 
 namespace CondensedSpoilerLogger
 {
-    public class CondensedSpoilerLogger : Mod
+    public class CondensedSpoilerLogger : Mod, IGlobalSettings<GlobalSettings>
     {
         internal static CondensedSpoilerLogger instance;
-        
+
+        public static GlobalSettings GS;
+        public void OnLoadGlobal(GlobalSettings s)
+        {
+            GS.LoadFrom(s);
+        }
+        public GlobalSettings OnSaveGlobal() => GS;
+
+
         public CondensedSpoilerLogger() : base(null)
         {
             instance = this;
