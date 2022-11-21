@@ -52,7 +52,7 @@ namespace CondensedSpoilerLogger.Loggers
             MakeLog(args, targetGroupedPlacements, "Area Transition spoiler log", "TargetTransitionSpoiler.txt");
         }
 
-        private static void MakeLog(LogArguments args,
+        private void MakeLog(LogArguments args,
             Dictionary<string, Dictionary<string, HashSet<string>>> groupedPlacements,
             string logType, string fileName)
         {

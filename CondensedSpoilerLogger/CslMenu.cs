@@ -15,6 +15,7 @@ namespace CondensedSpoilerLogger
 
         internal static void Hook()
         {
+            if (!CondensedSpoilerLogger.GS.DisplayWriteLogsButton) return;
             RandomizerMod.Menu.RandomizerMenuAPI.AddStartGameOverride(_ => { }, CreateButton);
         }
 

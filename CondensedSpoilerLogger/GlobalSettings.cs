@@ -5,13 +5,6 @@ namespace CondensedSpoilerLogger
     public class GlobalSettings
     {
         public Dictionary<string, bool> WrittenLogs = new();
-
-        public void LoadFrom(GlobalSettings s)
-        {
-            if (s.WrittenLogs != null)
-            {
-                WrittenLogs = s.WrittenLogs;
-            }
-        }
+        public bool DisplayWriteLogsButton = true;
     }
 }

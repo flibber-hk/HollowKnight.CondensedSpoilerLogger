@@ -12,7 +12,8 @@ namespace CondensedSpoilerLogger
         public static GlobalSettings GS;
         public void OnLoadGlobal(GlobalSettings s)
         {
-            GS.LoadFrom(s);
+            GS = s;
+            GS.WrittenLogs ??= new();
         }
         public GlobalSettings OnSaveGlobal() => GS;
 
