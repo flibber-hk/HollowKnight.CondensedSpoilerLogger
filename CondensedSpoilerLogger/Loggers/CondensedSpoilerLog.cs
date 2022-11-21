@@ -11,7 +11,7 @@ using ItemChanger;
 
 namespace CondensedSpoilerLogger.Loggers
 {
-    public class CondensedSpoilerLog : RandoLogger
+    public class CondensedSpoilerLog : CslLogger
     {
         public override void Log(LogArguments args)
         {
@@ -162,7 +162,7 @@ namespace CondensedSpoilerLogger.Loggers
                 }
             }
 
-            LogManager.Write(sb.ToString(), "CondensedSpoilerLog.txt");
+            WriteLog(sb.ToString(), "CondensedSpoilerLog.txt");
         }
     }
 }

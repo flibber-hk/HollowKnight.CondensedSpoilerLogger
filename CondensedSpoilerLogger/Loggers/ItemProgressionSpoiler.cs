@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RandomizerMod.Logging;
@@ -8,11 +6,10 @@ using RandomizerMod.RC;
 using RandomizerCore;
 using RandomizerCore.Logic;
 using RandomizerCore.Randomization;
-using ItemChanger;
 
 namespace CondensedSpoilerLogger.Loggers
 {
-    public class ItemProgressionSpoiler : RandoLogger
+    public class ItemProgressionSpoiler : CslLogger
     {
         public override void Log(LogArguments args)
         {
@@ -80,7 +77,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
                 sb.AppendLine();
             }
-            LogManager.Write(sb.ToString(), fileName);
+            WriteLog(sb.ToString(), fileName);
         }
 
         public void LogImportantItems(string fileName, List<List<ItemPlacement>> spheredPlacements, LogArguments args)
@@ -148,7 +145,7 @@ namespace CondensedSpoilerLogger.Loggers
 
                 mu.Hook(pm);
             }
-            LogManager.Write(sb.ToString(), fileName);
+            WriteLog(sb.ToString(), fileName);
         }
 
         public void SetupPM(RandoModContext ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu)

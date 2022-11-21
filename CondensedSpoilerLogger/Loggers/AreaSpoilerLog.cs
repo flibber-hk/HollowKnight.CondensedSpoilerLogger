@@ -59,7 +59,7 @@ namespace CondensedSpoilerLogger.Loggers
     }
 
 
-    internal class AreaSpoilerLog : RandoLogger
+    internal class AreaSpoilerLog : CslLogger
     {
         private class AreaNameOrderingStringComparer : IComparer<string>
         {
@@ -131,7 +131,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
             }
 
-            LogManager.Write(sb.ToString(), "AreaSortedItemSpoilerLog.txt");
+            WriteLog(sb.ToString(), "AreaSortedItemSpoilerLog.txt");
         }
     }
 }

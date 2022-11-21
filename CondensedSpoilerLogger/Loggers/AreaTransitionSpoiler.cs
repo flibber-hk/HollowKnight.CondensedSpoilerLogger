@@ -9,7 +9,7 @@ using System.Text;
 
 namespace CondensedSpoilerLogger.Loggers
 {
-    public class AreaTransitionSpoiler : RandoLogger
+    public class AreaTransitionSpoiler : CslLogger
     {
         public override void Log(LogArguments args)
         {
@@ -77,7 +77,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
             }
 
-            LogManager.Write(sb.ToString(), fileName);
+            WriteLog(sb.ToString(), fileName);
         }
 
         private class SceneOrder : IComparer<string>

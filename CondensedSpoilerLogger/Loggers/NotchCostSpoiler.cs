@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CondensedSpoilerLogger.Loggers
 {
-    public class NotchCostSpoiler : RandoLogger
+    public class NotchCostSpoiler : CslLogger
     {
         public override void Log(LogArguments args)
         {
@@ -29,7 +29,7 @@ namespace CondensedSpoilerLogger.Loggers
             int perc = Mathf.RoundToInt(tot / 90f * 100f);
             sb.AppendLine($"Total: {tot}. This is {perc}% of the vanilla total.");
 
-            LogManager.Write(sb.ToString(), "NotchCostSpoiler.txt");
+            WriteLog(sb.ToString(), "NotchCostSpoiler.txt");
         }
     }
 }

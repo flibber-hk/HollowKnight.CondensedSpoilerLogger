@@ -5,7 +5,7 @@ using RandomizerMod.Logging;
 
 namespace CondensedSpoilerLogger.Loggers
 {
-    public class ItemGroupSpoiler : RandoLogger
+    public class ItemGroupSpoiler : CslLogger
     {
         public override void Log(LogArguments args)
         {
@@ -42,7 +42,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sr.AddItemToStringBuilder(sb, item);
             }
 
-            LogManager.Write(sb.ToString(), "CollectedItemSpoiler.txt");
+            WriteLog(sb.ToString(), "CollectedItemSpoiler.txt");
         }
     }
 }
