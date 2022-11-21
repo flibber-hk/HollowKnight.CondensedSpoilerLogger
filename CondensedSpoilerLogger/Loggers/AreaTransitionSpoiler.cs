@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CondensedSpoilerLogger
+namespace CondensedSpoilerLogger.Loggers
 {
     public class AreaTransitionSpoiler : RandoLogger
     {
@@ -38,8 +38,8 @@ namespace CondensedSpoilerLogger
                 }
 
                 sourceGroupedPlacements.AddEntry(
-                    source.MapArea ?? AreaSpoilerLogExtensions.Other, 
-                    source.TitledArea ?? AreaSpoilerLogExtensions.Other, 
+                    source.MapArea ?? AreaSpoilerLogExtensions.Other,
+                    source.TitledArea ?? AreaSpoilerLogExtensions.Other,
                     sourceMsg);
 
                 targetGroupedPlacements.AddEntry(
@@ -52,7 +52,7 @@ namespace CondensedSpoilerLogger
             MakeLog(args, targetGroupedPlacements, "Area Transition spoiler log", "TargetTransitionSpoiler.txt");
         }
 
-        private static void MakeLog(LogArguments args, 
+        private static void MakeLog(LogArguments args,
             Dictionary<string, Dictionary<string, HashSet<string>>> groupedPlacements,
             string logType, string fileName)
         {
@@ -67,7 +67,7 @@ namespace CondensedSpoilerLogger
                     in mapAreaGroup.MoveMatchesToEnd(kvp => kvp.Key == AreaSpoilerLogExtensions.Other))
                 {
                     sb.AppendLine($"{titledArea}:");
-                    
+
                     foreach (string msg in titledAreaPlacements.OrderBy(x => x, SceneOrder.Instance))
                     {
                         sb.AppendLine("- " + msg);

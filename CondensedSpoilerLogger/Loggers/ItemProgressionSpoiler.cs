@@ -10,7 +10,7 @@ using RandomizerCore.Logic;
 using RandomizerCore.Randomization;
 using ItemChanger;
 
-namespace CondensedSpoilerLogger
+namespace CondensedSpoilerLogger.Loggers
 {
     public class ItemProgressionSpoiler : RandoLogger
     {
@@ -110,7 +110,7 @@ namespace CondensedSpoilerLogger
                     if (tpmt.Source.CanGet(pm)) continue;
                     foreach (Term term in tpmt.Source.GetTerms()) terms.Add(term);
                 }
-                for (int j = i+1; j < spheredPlacements.Count; j++)
+                for (int j = i + 1; j < spheredPlacements.Count; j++)
                 {
                     foreach (ItemPlacement ipmt in spheredPlacements[j])
                     {

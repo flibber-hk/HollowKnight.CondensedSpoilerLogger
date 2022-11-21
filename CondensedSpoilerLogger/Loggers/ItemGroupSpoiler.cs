@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using RandomizerMod.Logging;
 
-namespace CondensedSpoilerLogger
+namespace CondensedSpoilerLogger.Loggers
 {
     public class ItemGroupSpoiler : RandoLogger
     {
@@ -16,7 +16,7 @@ namespace CondensedSpoilerLogger
 
             List<string> repeatedItems = new();
             List<string> singleItems = new();
-            
+
             foreach (string item in sr.EnumerateItems())
             {
                 if (sr.LocationsForItem(item).Count() > 1)

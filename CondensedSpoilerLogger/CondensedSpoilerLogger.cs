@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Modding;
 using MonoMod.ModInterop;
-using UnityEngine;
 using RandomizerMod.Logging;
+using CondensedSpoilerLogger.Loggers;
 
 namespace CondensedSpoilerLogger
 {

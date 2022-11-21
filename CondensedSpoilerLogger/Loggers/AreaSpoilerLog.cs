@@ -11,7 +11,7 @@ using RandomizerCore.Logic;
 using ItemChanger;
 using Modding;
 
-namespace CondensedSpoilerLogger
+namespace CondensedSpoilerLogger.Loggers
 {
     internal static class AreaSpoilerLogExtensions
     {
@@ -101,7 +101,7 @@ namespace CondensedSpoilerLogger
             sb.AppendLine();
             foreach (var mapAreaGroup in LocationGrouping.MoveMatchesToEnd(kvp => kvp.Key == AreaSpoilerLogExtensions.Other).Select(kvp => kvp.Value))
             {
-                foreach ((string titledArea, HashSet<string> titledAreaLocations) 
+                foreach ((string titledArea, HashSet<string> titledAreaLocations)
                     in mapAreaGroup.MoveMatchesToEnd(kvp => kvp.Key == AreaSpoilerLogExtensions.Other))
                 {
                     bool anyNonMultiLocations = titledAreaLocations.Any(x => !multiLocations.Contains(x));

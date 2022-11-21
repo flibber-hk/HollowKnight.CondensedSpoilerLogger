@@ -4,7 +4,7 @@ using RandomizerMod.Logging;
 using Modding;
 using UnityEngine;
 
-namespace CondensedSpoilerLogger
+namespace CondensedSpoilerLogger.Loggers
 {
     public class NotchCostSpoiler : RandoLogger
     {

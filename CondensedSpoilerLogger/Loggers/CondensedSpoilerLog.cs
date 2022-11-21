@@ -9,7 +9,7 @@ using RandomizerCore;
 using RandomizerCore.Logic;
 using ItemChanger;
 
-namespace CondensedSpoilerLogger
+namespace CondensedSpoilerLogger.Loggers
 {
     public class CondensedSpoilerLog : RandoLogger
     {
@@ -55,7 +55,7 @@ namespace CondensedSpoilerLogger
             else
             {
                 sb.AppendLine("----------Nail Arts:----------");
-            } 
+            }
             sr.AddItemToStringBuilder(sb, ItemNames.Cyclone_Slash);
             sr.AddItemToStringBuilder(sb, ItemNames.Great_Slash);
             sr.AddItemToStringBuilder(sb, ItemNames.Dash_Slash);
