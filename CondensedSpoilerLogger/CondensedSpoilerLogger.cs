@@ -9,7 +9,7 @@ namespace CondensedSpoilerLogger
     {
         internal static CondensedSpoilerLogger instance;
 
-        public static GlobalSettings GS;
+        public static GlobalSettings GS = new();
         public void OnLoadGlobal(GlobalSettings s)
         {
             GS = s;
