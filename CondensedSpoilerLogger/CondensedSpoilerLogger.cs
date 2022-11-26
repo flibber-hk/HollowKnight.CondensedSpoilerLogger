@@ -41,6 +41,8 @@ namespace CondensedSpoilerLogger
             LogManager.AddLogger(new AreaTransitionSpoiler());
 
             CslMenu.Hook();
+
+            RBDebug.Hook();
         }
     }
 }
