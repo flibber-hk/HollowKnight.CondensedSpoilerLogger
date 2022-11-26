@@ -6,6 +6,7 @@ using RandomizerMod.Logging;
 using RandomizerMod.RC;
 using System;
 using UnityEngine.UI;
+using static RandomizerMod.Localization;
 
 namespace CondensedSpoilerLogger
 {
@@ -21,7 +22,7 @@ namespace CondensedSpoilerLogger
 
         private static bool CreateButton(RandoController rc, MenuPage landingPage, out BaseButton button)
         {
-            BigButton menuButton = new(landingPage, CslSpriteManager.GetSprite("Quill"), "Write Spoiler Logs");
+            BigButton menuButton = new(landingPage, CslSpriteManager.GetSprite("Quill"), Localize("Write Spoiler Logs Immediately"));
             bool writtenLogs = false;
             menuButton.OnClick += () =>
             {
