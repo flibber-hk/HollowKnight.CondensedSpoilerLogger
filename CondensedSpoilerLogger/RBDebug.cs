@@ -88,6 +88,7 @@ namespace CondensedSpoilerLogger
             }
             else if (gb is SymmetricTransitionGroupBuilder stgb)
             {
+                Log($"Reverse Label {stgb.reverseLabel}");
                 Log($"{stgb.Group1.GetTotal()} in group 1");
                 Log($"Sample member: {stgb.Group1.SelectAny()}");
                 Log($"{stgb.Group2.GetTotal()} in group 2");
