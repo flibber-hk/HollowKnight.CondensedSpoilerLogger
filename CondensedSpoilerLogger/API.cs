@@ -13,6 +13,13 @@ namespace CondensedSpoilerLogger
         {
             public static void AddCategory(string categoryName, Func<LogArguments, bool> test, List<string> entries)
                 => API.AddCategory(categoryName, test, entries);
+
+            /// <summary>
+            /// Add a category to the condensed spoiler log - delegates to AddCategory, but only uses
+            /// System types so does not create a run-time Randomizer dependency.
+            /// </summary>
+            public static void AddCategorySafe(string categoryName, Func<bool> test, List<string> entries)
+                => API.AddCategory(categoryName, _ => test(), entries);
         }
 
         private static List<(string, Func<LogArguments, bool>, List<string>)> AdditionalCategories = new();
