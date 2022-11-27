@@ -86,12 +86,12 @@ namespace CondensedSpoilerLogger.Loggers
             foreach (ItemPlacement pmt in args.ctx.itemPlacements)
             {
                 string location = pmt.Location.Name;
-                string titledArea = pmt.Location.LocationDef.TitledArea ?? AreaSpoilerLogExtensions.Other;
-                string mapArea = pmt.Location.LocationDef.MapArea ?? AreaSpoilerLogExtensions.Other;
+                string titledArea = pmt.Location.LocationDef?.TitledArea ?? AreaSpoilerLogExtensions.Other;
+                string mapArea = pmt.Location.LocationDef?.MapArea ?? AreaSpoilerLogExtensions.Other;
 
                 LocationGrouping.AddEntry(mapArea, titledArea, location);
 
-                if (pmt.Location.LocationDef.FlexibleCount)
+                if (pmt.Location.LocationDef?.FlexibleCount ?? false)
                 {
                     multiLocations.Add(location);
                 }
