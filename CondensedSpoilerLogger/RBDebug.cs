@@ -26,15 +26,25 @@ namespace CondensedSpoilerLogger
         private static void Log(object msg) => _log.LogDebug($"{IndentString}{msg}");
 
         private static readonly Random rng = new();
-        private static T SelectAny<T>(this Bucket<T> bucket) => bucket.ToWeightedArray().Next(rng);
+        private static string SelectAny(this Bucket<string> bucket)
+        {
+            try
+            {
+                return bucket.ToWeightedArray().Next(rng);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "BUCKET EMPTY";
+            }
+        }
 
 
         internal static void Hook()
         {
-            RequestBuilder.OnUpdate.Subscribe(float.MaxValue, LogRBState);
+            RequestBuilder.OnUpdate.Subscribe(float.MaxValue, InvokeLogRBState);
         }
 
-        private static void LogRBState(RequestBuilder rb)
+        private static void InvokeLogRBState(RequestBuilder rb)
         {
             if (ModHooks.GlobalSettings.LoggingLevel > LogLevel.Debug) return;
 
@@ -44,6 +54,19 @@ namespace CondensedSpoilerLogger
                 _indent = 0;
             }
 
+            try
+            {
+                LogRBState(rb);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex);
+            }
+            
+        }
+
+        private static void LogRBState(RequestBuilder rb)
+        {
             AddIndent();
 
             foreach (StageBuilder sb in rb.Stages)
