@@ -19,10 +19,10 @@ For the most part, this distinction only matters when transitions are not couple
 
 Also adds an API for connections to add to the CondensedSpoilerLog.
 
-## Write logs button
+## Open Logs Folder
 
-After randomization is successful, the start randomizer page will display a button to Write Logs immediately. This will write all spoiler
-logs to the `Randomizer 4/Recent` directory. The logs generated in this way may be inaccurate if playing a mode other than regular
+After randomization is successful, the start randomizer page will display a button to open the logs folder. This will write all spoiler
+logs to the `Randomizer 4/Recent` directory and open it. The logs generated in this way may be inaccurate if playing a mode other than regular
 randomizer (such as Multiworld).
 
 This option can be disabled in the global settings.
