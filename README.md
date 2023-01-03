@@ -25,6 +25,10 @@ After randomization is successful, the start randomizer page will display a butt
 logs to the `Randomizer 4/Recent` directory and open it. The logs generated in this way may be inaccurate if playing a mode other than regular
 randomizer (such as Multiworld).
 
+For technical reasons, the RawSpoiler.json file written at this time is different to the RawSpoiler.json written when entering the
+file properly. Consequently, the raw spoiler written in this way is called TempRawSpoiler.json. (It will be replaced with
+the correct RawSpoiler.json when entering the file.)
+
 This option can be disabled in the global settings.
 
 ## Global Settings

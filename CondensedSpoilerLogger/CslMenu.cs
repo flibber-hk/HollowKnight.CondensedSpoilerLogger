@@ -2,6 +2,7 @@
 using MenuChanger;
 using MenuChanger.MenuElements;
 using Modding;
+using Newtonsoft.Json;
 using RandomizerMod.Logging;
 using RandomizerMod.Menu;
 using RandomizerMod.RC;
@@ -35,6 +36,11 @@ namespace CondensedSpoilerLogger
                 }
                 
                 ReflectionHelper.CallMethod(typeof(LogManager), "WriteLogs", rc.args);
+                LogManager.Write((tw) =>
+                {
+                    using JsonTextWriter jtr = new(tw);
+                    RandomizerMod.RandomizerData.JsonUtil._js.Serialize(jtr, rc.ctx);
+                }, "TempRawSpoiler.json");
                 writtenLogs = true;
                 menuButton.Button.transform.Find("Image").GetComponent<Image>().sprite = CslSpriteManager.GetSprite("Map");
             };
