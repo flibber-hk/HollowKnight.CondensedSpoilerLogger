@@ -151,9 +151,8 @@ namespace CondensedSpoilerLogger.Loggers
 
         public void SetupPM(RandoModContext ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu)
         {
-            // TODO - Clone LM for thread safety reasons
-            // lm = new(new LogicManagerBuilder(ctx.LM));
-            lm = ctx.LM;
+            // Clone LM for thread safety reasons
+            lm = new(new LogicManagerBuilder(ctx.LM));
 
 
             pm = new(lm, ctx);
