@@ -41,17 +41,20 @@ namespace CondensedSpoilerLogger.Loggers
                 if (reachable.Count == 0)
                 {
                     CondensedSpoilerLogger.instance.LogError($"Unable to create {nameof(ItemProgressionSpoiler)}: no reachable locations ");
+                    foreach (ItemPlacement pmt in itemPlacements)
+                    {
+                        CondensedSpoilerLogger.instance.LogError($"- {pmt.Item.Name} @ {pmt.Location.Name}");
+                    }
                     return;
                 }
 
                 foreach (ItemPlacement pmt in reachable)
                 {
-                    pm.Add(pmt.Item);
+                    pm.Add(pmt.Item, pmt.Location);
                 }
                 // Add a clone of the current sphere to the list
                 SpheredPlacements.Add(new(reachable));
 
-                mu.Hook(pm);
                 itemPlacements = nonReachable;
             }
 
@@ -142,27 +145,28 @@ namespace CondensedSpoilerLogger.Loggers
 
                 sb.AppendLine();
                 sb.AppendLine();
-
-                mu.Hook(pm);
             }
             WriteLog(sb.ToString(), fileName);
         }
 
         public void SetupPM(RandoModContext ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu)
         {
-            // Clone LM for thread safety reasons
-            lm = new(new LogicManagerBuilder(ctx.LM));
+            // TODO - Clone LM for thread safety reasons
+            // lm = new(new LogicManagerBuilder(ctx.LM));
+            lm = ctx.LM;
+
 
             pm = new(lm, ctx);
-            mu = new(lm);
+            mu = pm.mu;
 
-            mu.AddPlacements(lm.Waypoints);
+            mu.AddWaypoints(lm.Waypoints);
+            mu.AddTransitions(lm.TransitionLookup.Values);
             mu.AddPlacements(ctx.Vanilla);
             if (ctx.transitionPlacements is not null)
             {
                 mu.AddEntries(ctx.transitionPlacements.Select(t => new PrePlacedItemUpdateEntry(t)));
             }
-            mu.Hook(pm);
+            mu.StartUpdating();
         }
     }
 }
