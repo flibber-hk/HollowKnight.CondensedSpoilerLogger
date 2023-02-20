@@ -37,8 +37,9 @@ namespace CondensedSpoilerLogger
             LogManager.AddLogger(new NotchCostSpoiler());
             LogManager.AddLogger(new AreaSpoilerLog());
             LogManager.AddLogger(new ItemGroupSpoiler());
-            LogManager.AddLogger(new ItemProgressionSpoiler());
             LogManager.AddLogger(new AreaTransitionSpoiler());
+            // We really want this logger to be run last, because it's the slowest
+            ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(new ItemProgressionSpoiler());
 
             CslMenu.Hook();
 

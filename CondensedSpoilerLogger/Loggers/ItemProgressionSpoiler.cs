@@ -11,7 +11,7 @@ namespace CondensedSpoilerLogger.Loggers
 {
     public class ItemProgressionSpoiler : CslLogger
     {
-        public override void Log(LogArguments args)
+        protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             Randomizer randomizer = (Randomizer)args.randomizer;
             RandoModContext ctx = (RandoModContext)randomizer.ctx;
@@ -45,7 +45,7 @@ namespace CondensedSpoilerLogger.Loggers
                     {
                         CondensedSpoilerLogger.instance.LogError($"- {pmt.Item.Name} @ {pmt.Location.Name}");
                     }
-                    return;
+                    yield break;
                 }
 
                 foreach (ItemPlacement pmt in reachable)
@@ -58,11 +58,11 @@ namespace CondensedSpoilerLogger.Loggers
                 itemPlacements = nonReachable;
             }
 
-            LogFullSpheres("OrderedItemProgressionSpoilerLog.txt", SpheredPlacements, args);
-            LogImportantItems("ReducedItemProgressionSpoilerLog.txt", SpheredPlacements, args);
+            yield return (LogFullSpheres(SpheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
+            yield return (LogImportantItems(SpheredPlacements, args), "ReducedItemProgressionSpoilerLog.txt");
         }
 
-        public void LogFullSpheres(string fileName, List<List<ItemPlacement>> spheredPlacements, LogArguments args)
+        public string LogFullSpheres(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
             SpoilerReader sr = new(args);
             StringBuilder sb = new();
@@ -80,10 +80,10 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
                 sb.AppendLine();
             }
-            WriteLog(sb.ToString(), fileName);
+            return sb.ToString();
         }
 
-        public void LogImportantItems(string fileName, List<List<ItemPlacement>> spheredPlacements, LogArguments args)
+        public string LogImportantItems(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
             Randomizer randomizer = (Randomizer)args.randomizer;
             RandoModContext ctx = (RandoModContext)randomizer.ctx;
@@ -146,7 +146,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
                 sb.AppendLine();
             }
-            WriteLog(sb.ToString(), fileName);
+            return sb.ToString();
         }
 
         public void SetupPM(RandoModContext ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu)

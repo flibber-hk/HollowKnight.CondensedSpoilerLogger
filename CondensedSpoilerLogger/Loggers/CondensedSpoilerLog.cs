@@ -13,7 +13,7 @@ namespace CondensedSpoilerLogger.Loggers
 {
     public class CondensedSpoilerLog : CslLogger
     {
-        public override void Log(LogArguments args)
+        protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             SpoilerReader sr = new(args);
             StringBuilder sb = new();
@@ -162,7 +162,7 @@ namespace CondensedSpoilerLogger.Loggers
                 }
             }
 
-            WriteLog(sb.ToString(), "CondensedSpoilerLog.txt");
+            yield return (sb.ToString(), "CondensedSpoilerLog.txt");
         }
     }
 }

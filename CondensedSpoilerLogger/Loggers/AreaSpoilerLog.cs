@@ -76,7 +76,7 @@ namespace CondensedSpoilerLogger.Loggers
 
         private static readonly IComparer<string> AreaNameOrdering = new AreaNameOrderingStringComparer();
 
-        public override void Log(LogArguments args)
+        protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             SpoilerReader sr = new(args);
             StringBuilder sb = new();
@@ -131,7 +131,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
             }
 
-            WriteLog(sb.ToString(), "AreaSortedItemSpoilerLog.txt");
+            yield return (sb.ToString(), "AreaSortedItemSpoilerLog.txt");
         }
     }
 }

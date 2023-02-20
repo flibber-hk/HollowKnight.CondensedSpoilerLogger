@@ -7,7 +7,7 @@ namespace CondensedSpoilerLogger.Loggers
 {
     public class ItemGroupSpoiler : CslLogger
     {
-        public override void Log(LogArguments args)
+        protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             SpoilerReader sr = new(args);
             StringBuilder sb = new();
@@ -42,7 +42,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sr.AddItemToStringBuilder(sb, item);
             }
 
-            WriteLog(sb.ToString(), "CollectedItemSpoiler.txt");
+            yield return (sb.ToString(), "CollectedItemSpoiler.txt");
         }
     }
 }

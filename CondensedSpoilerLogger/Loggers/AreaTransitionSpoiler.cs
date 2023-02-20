@@ -11,9 +11,9 @@ namespace CondensedSpoilerLogger.Loggers
 {
     public class AreaTransitionSpoiler : CslLogger
     {
-        public override void Log(LogArguments args)
+        protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
-            if ((args.ctx.transitionPlacements?.Count ?? 0) == 0) return;
+            if ((args.ctx.transitionPlacements?.Count ?? 0) == 0) yield break;
 
             // groupedPlacements[mapArea][titledArea] is the placements in that map/titled area
             Dictionary<string, Dictionary<string, HashSet<string>>> sourceGroupedPlacements = new();
@@ -48,13 +48,14 @@ namespace CondensedSpoilerLogger.Loggers
                     targetMsg);
             }
 
-            MakeLog(args, sourceGroupedPlacements, "Area Transition spoiler log", "SourceTransitionSpoiler.txt");
-            MakeLog(args, targetGroupedPlacements, "Area Transition spoiler log", "TargetTransitionSpoiler.txt");
+            yield return (MakeLog(args, sourceGroupedPlacements, "Area Transition spoiler log"), "SourceTransitionSpoiler.txt");
+            yield return (MakeLog(args, targetGroupedPlacements, "Area Transition spoiler log"), "TargetTransitionSpoiler.txt");
         }
 
-        private void MakeLog(LogArguments args,
+        private string MakeLog(LogArguments args,
             Dictionary<string, Dictionary<string, HashSet<string>>> groupedPlacements,
-            string logType, string fileName)
+            string logType
+            )
         {
             StringBuilder sb = new();
 
@@ -77,7 +78,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine();
             }
 
-            WriteLog(sb.ToString(), fileName);
+            return sb.ToString();
         }
 
         private class SceneOrder : IComparer<string>
