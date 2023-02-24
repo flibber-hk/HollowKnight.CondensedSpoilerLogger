@@ -234,6 +234,18 @@ namespace CondensedSpoilerLogger
         /// Add the given placement to a string builder.
         /// </summary>
         /// <param name="sb">The string builder.</param>
+        /// <param name="pmt">The placement.</param>
+        /// <returns>Always returns true.</returns>
+        public bool AddPlacementToStringBuilder(StringBuilder sb, ItemPlacement pmt)
+        {
+            return AddPlacementToStringBuilder(sb, pmt.Location.Name, pmt.Item.Name, GetCostText(pmt));
+        }
+
+
+        /// <summary>
+        /// Add the given placement to a string builder.
+        /// </summary>
+        /// <param name="sb">The string builder.</param>
         /// <param name="location">The location.</param>
         /// <param name="item">The name of the item.</param>
         /// <param name="costText">The cost text - usually generated using <see cref="GetCostText(ItemPlacement)"/> or <see cref="GetCostText(LogicCost)"/> if not null.</param>

@@ -14,11 +14,20 @@ namespace CondensedSpoilerLogger.Loggers
     {
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
+            List<List<ItemPlacement>> spheredPlacements = CreateSpheredPlacements(args);
+            if (spheredPlacements is null) yield break;
+
+            yield return (LogFullSpheres(spheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
+            yield return (LogImportantItems(spheredPlacements, args), "ReducedItemProgressionSpoilerLog.txt");
+        }
+
+
+        public static List<List<ItemPlacement>> CreateSpheredPlacements(LogArguments args)
+        {
             RCUtil.SetupPM(args.ctx, out _, out ProgressionManager pm, out MainUpdater mu);
 
-            // Take item placements from the LogArguments
             List<ItemPlacement> itemPlacements = args.ctx.itemPlacements;
-            List<List<ItemPlacement>> SpheredPlacements = new();
+            List<List<ItemPlacement>> spheredPlacements = new();
 
             while (itemPlacements.Count > 0)
             {
@@ -43,7 +52,7 @@ namespace CondensedSpoilerLogger.Loggers
                     {
                         CondensedSpoilerLogger.instance.LogError($"- {pmt.Item.Name} @ {pmt.Location.Name}");
                     }
-                    yield break;
+                    return null;
                 }
 
                 foreach (ItemPlacement pmt in reachable)
@@ -51,13 +60,12 @@ namespace CondensedSpoilerLogger.Loggers
                     pm.Add(pmt.Item, pmt.Location);
                 }
                 // Add a clone of the current sphere to the list
-                SpheredPlacements.Add(new(reachable));
+                spheredPlacements.Add(new(reachable));
 
                 itemPlacements = nonReachable;
             }
 
-            yield return (LogFullSpheres(SpheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
-            yield return (LogImportantItems(SpheredPlacements, args), "ReducedItemProgressionSpoilerLog.txt");
+            return spheredPlacements;
         }
 
         public string LogFullSpheres(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
@@ -72,7 +80,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine($"PROGRESSION SPHERE {i}");
                 foreach (ItemPlacement pmt in spheredPlacements[i])
                 {
-                    sr.AddPlacementToStringBuilder(sb, pmt.Location.Name, pmt.Item.Name, SpoilerReader.GetCostText(pmt));
+                    sr.AddPlacementToStringBuilder(sb, pmt);
                 }
 
                 sb.AppendLine();
@@ -134,7 +142,7 @@ namespace CondensedSpoilerLogger.Loggers
                         continue;
                     }
 
-                    sr.AddPlacementToStringBuilder(sb, pmt.Location.Name, pmt.Item.Name, SpoilerReader.GetCostText(pmt));
+                    sr.AddPlacementToStringBuilder(sb, pmt);
                     pm.Add(pmt.Item);
                 }
 
