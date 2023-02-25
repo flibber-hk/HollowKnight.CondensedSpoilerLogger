@@ -59,11 +59,13 @@ namespace CondensedSpoilerLogger
             set { _indent = value; IndentString = new string(' ', value); }
         }
         private string IndentString = string.Empty;
-        
 
-        public SpoilerReader(LogArguments args)
+
+        public SpoilerReader(LogArguments args) : this(args.ctx) { }
+
+        public SpoilerReader(RandoModContext ctx)
         {
-            List<ItemPlacement> raw = args.ctx.itemPlacements;
+            List<ItemPlacement> raw = ctx.itemPlacements;
 
             placementsByItem = new();
             placementsByLocation = new();
@@ -98,16 +100,16 @@ namespace CondensedSpoilerLogger
             }
 
             ApplyMerges();
-            AddNotchCosts(args);
+            AddNotchCosts(ctx);
         }
 
-        private void AddNotchCosts(LogArguments args)
+        private void AddNotchCosts(RandoModContext ctx)
         {
-            if (!args.gs.MiscSettings.RandomizeNotchCosts) return;
+            if (!ctx.GenerationSettings.MiscSettings.RandomizeNotchCosts) return;
 
             foreach ((string charmName, int charmNum) in CharmIdList.CharmIdMap)
             {
-                itemUINames.Add(charmName, $"{Translation.Translate(charmName)} [{args.ctx.notchCosts[charmNum - 1]}]");
+                itemUINames.Add(charmName, $"{Translation.Translate(charmName)} [{ctx.notchCosts[charmNum - 1]}]");
             }    
         }
 
