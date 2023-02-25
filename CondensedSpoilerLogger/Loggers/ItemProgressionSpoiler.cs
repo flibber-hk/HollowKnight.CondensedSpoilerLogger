@@ -72,7 +72,7 @@ namespace CondensedSpoilerLogger.Loggers
                 sb.AppendLine($"PROGRESSION SPHERE {i}");
                 foreach (ItemPlacement pmt in spheredPlacements[i])
                 {
-                    sr.AddPlacementToStringBuilder(sb, pmt.Location.Name, pmt.Item.Name, SpoilerReader.GetCostText(pmt));
+                    sr.AddPlacementToStringBuilder(sb, pmt);
                 }
 
                 sb.AppendLine();
