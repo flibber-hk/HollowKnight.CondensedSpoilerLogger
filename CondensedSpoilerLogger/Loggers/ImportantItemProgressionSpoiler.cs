@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using CondensedSpoilerLogger.Util;
 
 namespace CondensedSpoilerLogger.Loggers
 {
@@ -16,7 +17,7 @@ namespace CondensedSpoilerLogger.Loggers
             Stopwatch sw = new();
             sw.Start();
 
-            ItemProgressionSpoiler.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             List<List<ItemPlacement>> spheredPlacements = ItemProgressionSpoiler.CreateSpheredPlacements(args);
             if (spheredPlacements is null) yield break;
@@ -36,12 +37,12 @@ namespace CondensedSpoilerLogger.Loggers
                 orderedPlacements[j] = null;
             }
 
-            mu.SetLongTermRevertPoint();
-
             for (; i >= 0; i--)
             {
                 ItemPlacement? current = orderedPlacements[i];
                 orderedPlacements[i] = null;
+
+                if (!current.Value.Item.GetAffectedTerms().Any()) continue;
 
                 if (!Validate(orderedPlacements, pm, lm.GetTermStrict("LEFTCLAW")))
                 {
