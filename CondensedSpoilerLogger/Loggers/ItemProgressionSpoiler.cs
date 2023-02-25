@@ -6,6 +6,7 @@ using RandomizerMod.RC;
 using RandomizerCore;
 using RandomizerCore.Logic;
 using RandomizerCore.Randomization;
+using CondensedSpoilerLogger.Util;
 
 namespace CondensedSpoilerLogger.Loggers
 {
@@ -16,7 +17,7 @@ namespace CondensedSpoilerLogger.Loggers
             Randomizer randomizer = (Randomizer)args.randomizer;
             RandoModContext ctx = (RandoModContext)randomizer.ctx;
 
-            SetupPM(ctx, out _, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(ctx, out _, out ProgressionManager pm, out MainUpdater mu);
 
             // Take item placements from the LogArguments
             List<ItemPlacement> itemPlacements = args.ctx.itemPlacements;
@@ -88,7 +89,7 @@ namespace CondensedSpoilerLogger.Loggers
             Randomizer randomizer = (Randomizer)args.randomizer;
             RandoModContext ctx = (RandoModContext)randomizer.ctx;
 
-            SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             // All terms that might unlock something in a later sphere - either a location from a later sphere, or
             // a waypoint/vanilla placement/transition that the pm doesn't have yet
