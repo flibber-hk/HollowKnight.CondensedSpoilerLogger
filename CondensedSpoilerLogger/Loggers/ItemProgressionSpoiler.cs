@@ -14,10 +14,7 @@ namespace CondensedSpoilerLogger.Loggers
     {
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
-            Randomizer randomizer = (Randomizer)args.randomizer;
-            RandoModContext ctx = (RandoModContext)randomizer.ctx;
-
-            RCUtil.SetupPM(ctx, out _, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(args.ctx, out _, out ProgressionManager pm, out MainUpdater mu);
 
             // Take item placements from the LogArguments
             List<ItemPlacement> itemPlacements = args.ctx.itemPlacements;
@@ -86,10 +83,7 @@ namespace CondensedSpoilerLogger.Loggers
 
         public string LogImportantItems(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
-            Randomizer randomizer = (Randomizer)args.randomizer;
-            RandoModContext ctx = (RandoModContext)randomizer.ctx;
-
-            RCUtil.SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             // All terms that might unlock something in a later sphere - either a location from a later sphere, or
             // a waypoint/vanilla placement/transition that the pm doesn't have yet
@@ -101,12 +95,12 @@ namespace CondensedSpoilerLogger.Loggers
                     if (wp.CanGet(pm)) continue;
                     foreach (Term term in wp.GetTerms()) terms.Add(term);
                 }
-                foreach (GeneralizedPlacement vpmt in ctx.Vanilla)
+                foreach (GeneralizedPlacement vpmt in args.ctx.Vanilla)
                 {
                     if (vpmt.Location.CanGet(pm)) continue;
                     foreach (Term term in vpmt.Location.GetTerms()) terms.Add(term);
                 }
-                foreach (TransitionPlacement tpmt in ctx.transitionPlacements ?? Enumerable.Empty<TransitionPlacement>())
+                foreach (TransitionPlacement tpmt in args.ctx.transitionPlacements ?? Enumerable.Empty<TransitionPlacement>())
                 {
                     if (tpmt.Source.CanGet(pm)) continue;
                     foreach (Term term in tpmt.Source.GetTerms()) terms.Add(term);
