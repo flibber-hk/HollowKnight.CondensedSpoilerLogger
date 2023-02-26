@@ -40,7 +40,6 @@ namespace CondensedSpoilerLogger
             LogManager.AddLogger(new AreaTransitionSpoiler());
             // We really want this logger to be run last, because it's the slowest
             ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(new ItemProgressionSpoiler());
-            ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(new ImportantItemProgressionSpoiler());
 
             CslMenu.Hook();
 
