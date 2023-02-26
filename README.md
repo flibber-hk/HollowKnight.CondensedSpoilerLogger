@@ -8,9 +8,10 @@ Hollow Knight Randomizer add-on to create a condensed spoiler log. Adds the foll
 - OrderedItemProgressionSpoilerLog: Lists the randomized item placements in an order that they could be collected to complete the seed.
 Progression Sphere 0 consists of the items reachable from the start. Each subsequent sphere consists of all items reachable with the previous sphere's items.
 There is no guarantee that the order the items appear in this log reflects the order that the randomizer placed them; it is simply one possible such order.
-- ReducedItemProgressionSpoilerLog: The same as the ordered spoiler, except it tries to log only log items that it thinks might unlock something later.
-It may throw false positives - for example, if it thinks that a mask shard could possibly unlock later items but in fact those items are unlocked
-by other progression.
+- FilteredItemProgressionSpoilerLog: The same as the ordered spoiler, except it only logs items that will unlock something later.
+Note - the log generated is minimal in the sense that every item is required. However, it is possible that fewer items can be used in a different way;
+for instance, the log may list all stags besides Stag Nest Stag (which unlocks stag access to Stag Nest) and not Stag Nest Stag itself - none
+of these can be removed, even though the number of items in the log can be reduced.
 - CollectedItemSpoiler: Collects locations with the same item and groups them together. Items which appear only once are placed
 at the bottom of the log.
 - SourceTransitionSpoiler / TargetTransitionSpoiler: If transitions are randomized, lists transition placements grouped by area.
