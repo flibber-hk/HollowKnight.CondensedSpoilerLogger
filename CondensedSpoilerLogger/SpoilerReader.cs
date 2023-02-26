@@ -239,7 +239,7 @@ namespace CondensedSpoilerLogger
         /// <param name="pmt">The placement.</param>
         /// <returns>Always returns true.</returns>
         public bool AddPlacementToStringBuilder(StringBuilder sb, ItemPlacement pmt)
-            => AddPlacementToStringBuilder(sb, pmt.Item.Name, pmt.Location.Name, GetCostText(pmt));
+            => AddPlacementToStringBuilder(sb, pmt.Location.Name, pmt.Item.Name, GetCostText(pmt));
 
         /// <summary>
         /// Add the given placement to a string builder.
