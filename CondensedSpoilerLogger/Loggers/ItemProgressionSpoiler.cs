@@ -7,18 +7,23 @@ using RandomizerCore;
 using RandomizerCore.Logic;
 using RandomizerCore.Randomization;
 using CondensedSpoilerLogger.Util;
+using System;
+using Modding;
+using RandomizerCore.LogicItems;
 
 namespace CondensedSpoilerLogger.Loggers
 {
     public class ItemProgressionSpoiler : CslLogger
     {
+        private static ILogger _logger = new SimpleLogger("CondensedSpoilerLogger.ItemProgressionSpoiler");
+
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             List<List<ItemPlacement>> spheredPlacements = CreateSpheredPlacements(args);
             if (spheredPlacements is null) yield break;
 
             yield return (LogFullSpheres(spheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
-            yield return (LogImportantItems(spheredPlacements, args), "ReducedItemProgressionSpoilerLog.txt");
+            yield return (LogImportantItems(spheredPlacements, args), "FilteredItemProgressionSpoilerLog.txt");
         }
 
 
@@ -92,18 +97,19 @@ namespace CondensedSpoilerLogger.Loggers
         public string LogImportantItems(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
             List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args);
+            List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, args);
 
             SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
             sb.AppendLine($"Important item progression with seed: {args.gs.Seed}");
             sb.AppendLine();
             sb.AppendLine();
-            for (int i = 0; i < importantPlacements.Count; i++)
+            for (int i = 0; i < filteredPlacements.Count; i++)
             {
-                sb.AppendLine($"PROGRESSION SPHERE {i} ({importantPlacements[i].Count} items)");
+                sb.AppendLine($"PROGRESSION SPHERE {i} ({spheredPlacements[i].Count} items)");
 
                 // Write placements that might unlock something later
-                foreach (ItemPlacement pmt in importantPlacements[i])
+                foreach (ItemPlacement pmt in filteredPlacements[i])
                 {
                     sr.AddPlacementToStringBuilder(sb, pmt);
                 }
@@ -170,6 +176,48 @@ namespace CondensedSpoilerLogger.Loggers
             }
 
             return importantPlacements;
+        }
+
+        /// <summary>
+        /// Given a collection of sphered placements, finds a minimal subset of them wrt inclusion such that
+        /// all placements in the collection are reachable.
+        /// </summary>
+        private List<List<ItemPlacement>> FilterImportantPlacements(List<List<ItemPlacement>> importantPlacements, LogArguments args)
+        {
+            List<List<ItemPlacement>> result = new List<List<ItemPlacement>>();
+            foreach (List<ItemPlacement> sphere in importantPlacements)
+            {
+                result.Add(new(sphere));
+            }
+
+            RCUtil.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+
+            if (!RCUtil.ValidateReachable(result.SelectMany(x => x), pm, true))
+            {
+                _logger.LogError($"{nameof(FilterImportantPlacements)}: Validation failure");
+                return importantPlacements;
+            }
+
+            pm.Reset();
+
+            RandoModItem emptyItem = new() { item = new EmptyItem("csl_emtpy_item") };
+
+            foreach (List<ItemPlacement> sphere in ((IEnumerable<List<ItemPlacement>>)result).Reverse())
+            {
+                for (int i = 0; i < sphere.Count; i++)
+                {
+                    ItemPlacement current = sphere[i];
+                    sphere[i] = new ItemPlacement(emptyItem, current.Location);
+
+                    if (!RCUtil.ValidateReachable(result.SelectMany(x => x), pm, true))
+                    {
+                        sphere[i] = current;
+                    }
+                    pm.Reset();
+                }
+            }
+
+            return result.Select(sphere => sphere.Where(pmt => pmt.Item.item is not EmptyItem).ToList()).ToList();
         }
     }
 }

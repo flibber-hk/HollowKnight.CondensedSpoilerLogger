@@ -29,5 +29,44 @@ namespace CondensedSpoilerLogger.Util
 
             mu.SetLongTermRevertPoint();
         }
+
+        public static bool ValidateReachable(IEnumerable<ItemPlacement> placements, ProgressionManager pm, bool ordered = false)
+        {
+            switch (ordered)
+            {
+                case true:
+                    return ValidateReachableOrdered(placements, pm);
+                case false:
+                    return ValidateReachableUnordered(placements, pm);
+            }
+        }
+
+        public static bool ValidateReachableOrdered(IEnumerable<ItemPlacement> placements, ProgressionManager pm)
+        {
+            pm.mu.StartUpdating();
+            foreach (ItemPlacement pmt in placements)
+            {
+                PrePlacedItemUpdateEntry entry = new(pmt);
+                pm.mu.AddEntry(entry);
+                if (!entry.obtained) return false;
+            }
+            return true;
+        }
+
+        public static bool ValidateReachableUnordered(IEnumerable<ItemPlacement> placements, ProgressionManager pm)
+        {
+            // First, validate that everything is reachable
+            List<PrePlacedItemUpdateEntry> entries = new();
+            foreach (ItemPlacement pmt in placements)
+            {
+                PrePlacedItemUpdateEntry entry = new(pmt);
+                entries.Add(entry);
+                pm.mu.AddEntry(entry);
+            }
+
+            pm.mu.StartUpdating();
+
+            return entries.All(e => e.obtained);
+        }
     }
 }
