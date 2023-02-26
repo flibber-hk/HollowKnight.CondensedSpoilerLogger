@@ -70,7 +70,7 @@ namespace CondensedSpoilerLogger.Loggers
 
         public string LogFullSpheres(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
-            SpoilerReader sr = new(args);
+            SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
             sb.AppendLine($"Logical item progression with seed: {args.gs.Seed}");
             sb.AppendLine();
@@ -93,7 +93,7 @@ namespace CondensedSpoilerLogger.Loggers
         {
             List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args);
 
-            SpoilerReader sr = new(args);
+            SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
             sb.AppendLine($"Important item progression with seed: {args.gs.Seed}");
             sb.AppendLine();

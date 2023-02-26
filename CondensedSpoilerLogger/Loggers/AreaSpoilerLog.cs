@@ -78,7 +78,7 @@ namespace CondensedSpoilerLogger.Loggers
 
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
-            SpoilerReader sr = new(args);
+            SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
 
             Dictionary<string, Dictionary<string, HashSet<string>>> LocationGrouping = new();
