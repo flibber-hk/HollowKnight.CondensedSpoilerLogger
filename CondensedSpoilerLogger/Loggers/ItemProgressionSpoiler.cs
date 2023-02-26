@@ -91,6 +91,33 @@ namespace CondensedSpoilerLogger.Loggers
 
         public string LogImportantItems(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
+            List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args);
+
+            SpoilerReader sr = new(args);
+            StringBuilder sb = new();
+            sb.AppendLine($"Important item progression with seed: {args.gs.Seed}");
+            sb.AppendLine();
+            sb.AppendLine();
+            for (int i = 0; i < importantPlacements.Count; i++)
+            {
+                sb.AppendLine($"PROGRESSION SPHERE {i} ({importantPlacements[i].Count} items)");
+
+                // Write placements that might unlock something later
+                foreach (ItemPlacement pmt in importantPlacements[i])
+                {
+                    sr.AddPlacementToStringBuilder(sb, pmt);
+                }
+
+                sb.AppendLine();
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        public List<List<ItemPlacement>> ComputeImportantPlacements(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
+        {
+            List<List<ItemPlacement>> importantPlacements = new();
+
             RCUtil.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             // All terms that might unlock something in a later sphere - either a location from a later sphere, or
@@ -123,18 +150,12 @@ namespace CondensedSpoilerLogger.Loggers
                 return terms;
             }
 
-            SpoilerReader sr = new(args);
-            StringBuilder sb = new();
-            sb.AppendLine($"Important item progression with seed: {args.gs.Seed}");
-            sb.AppendLine();
-            sb.AppendLine();
             for (int i = 0; i < spheredPlacements.Count; i++)
             {
+                List<ItemPlacement> sphere = new();
+                importantPlacements.Add(sphere);
                 HashSet<Term> terms = GetTerms(i);
 
-                sb.AppendLine($"PROGRESSION SPHERE {i} ({spheredPlacements[i].Count} items)");
-
-                // Write placements that might unlock something later
                 foreach (ItemPlacement pmt in spheredPlacements[i])
                 {
                     if (!pmt.Item.GetAffectedTerms().Any(x => terms.Contains(x)))
@@ -142,14 +163,13 @@ namespace CondensedSpoilerLogger.Loggers
                         continue;
                     }
 
-                    sr.AddPlacementToStringBuilder(sb, pmt);
-                    pm.Add(pmt.Item);
+                    sphere.Add(pmt);
+                    pm.Add(pmt.Item, pmt.Location);
                 }
 
-                sb.AppendLine();
-                sb.AppendLine();
             }
-            return sb.ToString();
+
+            return importantPlacements;
         }
     }
 }
