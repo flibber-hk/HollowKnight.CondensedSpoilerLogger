@@ -15,15 +15,22 @@ namespace CondensedSpoilerLogger.Loggers
 {
     public class ItemProgressionSpoiler : CslLogger
     {
-        private static ILogger _logger = new SimpleLogger("CondensedSpoilerLogger.ItemProgressionSpoiler");
+        private static readonly ILogger _logger = new SimpleLogger("CondensedSpoilerLogger.ItemProgressionSpoiler");
 
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             List<List<ItemPlacement>> spheredPlacements = CreateSpheredPlacements(args);
             if (spheredPlacements is null) yield break;
 
-            yield return (LogFullSpheres(spheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
-            yield return (LogImportantItems(spheredPlacements, args), "FilteredItemProgressionSpoilerLog.txt");
+            yield return (LogSpheres(spheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
+            
+            List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args);
+#if DEBUG
+            yield return (LogSpheres(importantPlacements, args), "ReducedItemProgressionSpoilerLog.txt");
+#endif
+            
+            List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, args);
+            yield return (LogSpheres(filteredPlacements, args), "FilteredItemProgressionSpoilerLog.txt");
         }
 
 
@@ -73,44 +80,26 @@ namespace CondensedSpoilerLogger.Loggers
             return spheredPlacements;
         }
 
-        public string LogFullSpheres(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
+        /// <summary>
+        /// Creates a log with the sphered placements.
+        /// </summary>
+        /// <param name="loggedPlacements">All the placements. Any placement called <see cref="DummyItemName"/> will not be displayed.</param>
+        /// <param name="args">The log arguments.</param>
+        public string LogSpheres(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
-            SpoilerReader sr = new(args.ctx);
-            StringBuilder sb = new();
-            sb.AppendLine($"Logical item progression with seed: {args.gs.Seed}");
-            sb.AppendLine();
-            sb.AppendLine();
-            for (int i = 0; i < spheredPlacements.Count; i++)
-            {
-                sb.AppendLine($"PROGRESSION SPHERE {i}");
-                foreach (ItemPlacement pmt in spheredPlacements[i])
-                {
-                    sr.AddPlacementToStringBuilder(sb, pmt);
-                }
-
-                sb.AppendLine();
-                sb.AppendLine();
-            }
-            return sb.ToString();
-        }
-
-        public string LogImportantItems(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
-        {
-            List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args);
-            List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, args);
-
             SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
             sb.AppendLine($"Important item progression with seed: {args.gs.Seed}");
             sb.AppendLine();
             sb.AppendLine();
-            for (int i = 0; i < filteredPlacements.Count; i++)
+            for (int i = 0; i < spheredPlacements.Count; i++)
             {
                 sb.AppendLine($"PROGRESSION SPHERE {i} ({spheredPlacements[i].Count} items)");
 
-                // Write placements that might unlock something later
-                foreach (ItemPlacement pmt in filteredPlacements[i])
+                foreach (ItemPlacement pmt in spheredPlacements[i])
                 {
+                    if (pmt.Item.Name == DummyItemName) continue;
+
                     sr.AddPlacementToStringBuilder(sb, pmt);
                 }
 
@@ -119,6 +108,10 @@ namespace CondensedSpoilerLogger.Loggers
             }
             return sb.ToString();
         }
+
+        private const string DummyItemName = "csl_empty_item";
+        private RandoModItem MakeDummyItem()
+            => new() { item = new EmptyItem(DummyItemName) };
 
         public List<List<ItemPlacement>> ComputeImportantPlacements(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
         {
@@ -166,11 +159,13 @@ namespace CondensedSpoilerLogger.Loggers
                 {
                     if (!pmt.Item.GetAffectedTerms().Any(x => terms.Contains(x)))
                     {
-                        continue;
+                        sphere.Add(new ItemPlacement(MakeDummyItem(), pmt.Location));
                     }
-
-                    sphere.Add(pmt);
-                    pm.Add(pmt.Item, pmt.Location);
+                    else
+                    {
+                        sphere.Add(pmt);
+                        pm.Add(pmt.Item, pmt.Location);
+                    }
                 }
 
             }
@@ -184,7 +179,7 @@ namespace CondensedSpoilerLogger.Loggers
         /// </summary>
         private List<List<ItemPlacement>> FilterImportantPlacements(List<List<ItemPlacement>> importantPlacements, LogArguments args)
         {
-            List<List<ItemPlacement>> result = new List<List<ItemPlacement>>();
+            List<List<ItemPlacement>> result = new ();
             foreach (List<ItemPlacement> sphere in importantPlacements)
             {
                 result.Add(new(sphere));
@@ -200,14 +195,12 @@ namespace CondensedSpoilerLogger.Loggers
 
             pm.Reset();
 
-            RandoModItem emptyItem = new() { item = new EmptyItem("csl_emtpy_item") };
-
             foreach (List<ItemPlacement> sphere in ((IEnumerable<List<ItemPlacement>>)result).Reverse())
             {
-                for (int i = 0; i < sphere.Count; i++)
+                for (int i = sphere.Count - 1; i >= 0; i--)
                 {
                     ItemPlacement current = sphere[i];
-                    sphere[i] = new ItemPlacement(emptyItem, current.Location);
+                    sphere[i] = new ItemPlacement(MakeDummyItem(), current.Location);
 
                     if (!RCUtil.ValidateReachable(result.SelectMany(x => x), pm, true))
                     {
@@ -217,7 +210,7 @@ namespace CondensedSpoilerLogger.Loggers
                 }
             }
 
-            return result.Select(sphere => sphere.Where(pmt => pmt.Item.item is not EmptyItem).ToList()).ToList();
+            return result;
         }
     }
 }
