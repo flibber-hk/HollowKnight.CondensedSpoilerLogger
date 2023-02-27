@@ -3,6 +3,9 @@ using MonoMod.ModInterop;
 using RandomizerMod.Logging;
 using CondensedSpoilerLogger.Loggers;
 using System.Collections.Generic;
+using RandomizerMod.RC;
+using CondensedSpoilerLogger.Interop;
+using System.Reflection;
 
 namespace CondensedSpoilerLogger
 {
@@ -40,6 +43,27 @@ namespace CondensedSpoilerLogger
             yield return new ItemProgressionSpoiler();
         }
 
+        public static void WriteCslLogs()
+        {
+            if (RandomizerMod.RandomizerMod.RS?.Context is not RandoModContext ctx)
+            {
+                DebugMod.LogToConsole("No rando context found");
+                return;
+            }
+
+            LogArguments args = new()
+            {
+                randomizer = default,
+                ctx = ctx,
+                gs = ctx.GenerationSettings
+            };
+
+            foreach (CslLogger logger in CreateLoggers())
+            {
+                logger.MakeLogRequests(args);
+            }
+        }
+
         public override void Initialize()
         {
             Log("Initializing Mod...");
@@ -55,6 +79,8 @@ namespace CondensedSpoilerLogger
             CslMenu.Hook();
 
             RBDebug.Hook();
+
+            DebugMod.AddActionToKeyBindList(WriteCslLogs, "Write Csl Logs");
         }
     }
 }
