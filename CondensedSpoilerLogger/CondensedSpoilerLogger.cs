@@ -2,6 +2,7 @@ using Modding;
 using MonoMod.ModInterop;
 using RandomizerMod.Logging;
 using CondensedSpoilerLogger.Loggers;
+using System.Collections.Generic;
 
 namespace CondensedSpoilerLogger
 {
@@ -29,17 +30,27 @@ namespace CondensedSpoilerLogger
             return GetType().Assembly.GetName().Version.ToString();
         }
         
+        public static IEnumerable<CslLogger> CreateLoggers()
+        {
+            yield return new CondensedSpoilerLog();
+            yield return new NotchCostSpoiler();
+            yield return new AreaSpoilerLog();
+            yield return new ItemGroupSpoiler();
+            yield return new AreaTransitionSpoiler();
+            yield return new ItemProgressionSpoiler();
+        }
+
         public override void Initialize()
         {
             Log("Initializing Mod...");
 
-            LogManager.AddLogger(new CondensedSpoilerLog());
-            LogManager.AddLogger(new NotchCostSpoiler());
-            LogManager.AddLogger(new AreaSpoilerLog());
-            LogManager.AddLogger(new ItemGroupSpoiler());
-            LogManager.AddLogger(new AreaTransitionSpoiler());
-            // We really want this logger to be run last, because it's the slowest
-            ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(new ItemProgressionSpoiler());
+            ModHooks.FinishedLoadingModsHook += () =>
+            {
+                foreach (CslLogger logger in CreateLoggers())
+                {
+                    LogManager.AddLogger(logger);
+                }
+            };
 
             CslMenu.Hook();
 
