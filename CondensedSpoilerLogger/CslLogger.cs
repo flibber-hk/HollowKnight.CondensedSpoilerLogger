@@ -1,21 +1,15 @@
 ﻿using RandomizerMod.Logging;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CondensedSpoilerLogger
 {
-    public abstract class CslLogger : RandoLogger
+    public abstract class CslLogger
     {
-
         protected abstract IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args);
 
-        public sealed override void Log(LogArguments args)
-        {
-            foreach ((string text, string filename) in CreateLogTexts(args))
-            {
-                WriteLog(text, filename);
-            }
-        }
+        public IEnumerable<(string text, string filename)> GetLogTexts(LogArguments args) => CreateLogTexts(args).Where(pair => CanWrite(pair.filename));
 
         internal void MakeLogRequests(LogArguments args)
         {
@@ -30,14 +24,14 @@ namespace CondensedSpoilerLogger
         /// <summary>
         /// Write the log, subject to it not having been disabled in the global settings.
         /// </summary>
-        private void WriteLog(string text, string fileName)
+        internal static void CreateLogAction(string text, string fileName)
         {
             if (!CanWrite(fileName)) return;
 
             LogManager.Write(text, fileName);
         }
 
-        private static bool CanWrite(string fileName)
+        internal static bool CanWrite(string fileName)
         {
             if (!CondensedSpoilerLogger.GS.WrittenLogs.ContainsKey(fileName))
             {

@@ -58,23 +58,14 @@ namespace CondensedSpoilerLogger
                 gs = ctx.GenerationSettings
             };
 
-            foreach (CslLogger logger in CreateLoggers())
-            {
-                logger.MakeLogRequests(args);
-            }
+            new CslLogWriter().Log(args);
         }
 
         public override void Initialize()
         {
             Log("Initializing Mod...");
 
-            ModHooks.FinishedLoadingModsHook += () =>
-            {
-                foreach (CslLogger logger in CreateLoggers())
-                {
-                    LogManager.AddLogger(logger);
-                }
-            };
+            ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(new CslLogWriter());
 
             CslMenu.Hook();
 
