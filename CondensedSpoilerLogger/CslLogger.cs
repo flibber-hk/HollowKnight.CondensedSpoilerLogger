@@ -1,4 +1,5 @@
-﻿using RandomizerMod.Logging;
+﻿using HutongGames.PlayMaker.Actions;
+using RandomizerMod.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,36 +10,24 @@ namespace CondensedSpoilerLogger
     {
         protected abstract IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args);
 
-        public IEnumerable<(string text, string filename)> GetLogTexts(LogArguments args) => CreateLogTexts(args).Where(pair => CanWrite(pair.filename));
+        public IEnumerable<(string text, string filename)> GetLogTexts(LogArguments args) => CanWrite() 
+            ? CreateLogTexts(args) 
+            : Enumerable.Empty<(string, string)>();
 
-        internal void MakeLogRequests(LogArguments args)
+        public string Name { get; }
+        public CslLogger()
         {
-            foreach ((string text, string filename) in CreateLogTexts(args))
-            {
-                if (!CanWrite(filename)) return;
-
-                LogManager.Write(tw => tw.Write(text), filename);
-            }
+            Name = GetType().Name;
         }
 
-        /// <summary>
-        /// Write the log, subject to it not having been disabled in the global settings.
-        /// </summary>
-        internal static void CreateLogAction(string text, string fileName)
+        internal bool CanWrite()
         {
-            if (!CanWrite(fileName)) return;
-
-            LogManager.Write(text, fileName);
-        }
-
-        internal static bool CanWrite(string fileName)
-        {
-            if (!CondensedSpoilerLogger.GS.WrittenLogs.ContainsKey(fileName))
+            if (!CondensedSpoilerLogger.GS.WrittenLogs.ContainsKey(Name))
             {
-                CondensedSpoilerLogger.GS.WrittenLogs.Add(fileName, true);
+                CondensedSpoilerLogger.GS.WrittenLogs.Add(Name, true);
             }
 
-            if (!CondensedSpoilerLogger.GS.WrittenLogs[fileName])
+            if (!CondensedSpoilerLogger.GS.WrittenLogs[Name])
             {
                 return false;
             }
