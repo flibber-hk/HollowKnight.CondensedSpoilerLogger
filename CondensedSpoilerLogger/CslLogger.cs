@@ -22,12 +22,12 @@ namespace CondensedSpoilerLogger
 
         internal bool CanWrite()
         {
-            if (!CondensedSpoilerLogger.GS.WrittenLogs.ContainsKey(Name))
+            if (!CondensedSpoilerLogger.GS.WritableLogs.ContainsKey(Name))
             {
-                CondensedSpoilerLogger.GS.WrittenLogs.Add(Name, true);
+                CondensedSpoilerLogger.GS.WritableLogs.Add(Name, true);
             }
 
-            if (!CondensedSpoilerLogger.GS.WrittenLogs[Name])
+            if (!CondensedSpoilerLogger.GS.WritableLogs[Name])
             {
                 return false;
             }
