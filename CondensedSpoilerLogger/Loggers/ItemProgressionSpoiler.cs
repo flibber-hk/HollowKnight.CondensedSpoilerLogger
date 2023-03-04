@@ -19,26 +19,26 @@ namespace CondensedSpoilerLogger.Loggers
 
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
-            List<List<ItemPlacement>> spheredPlacements = CreateSpheredPlacements(args);
+            List<List<ItemPlacement>> spheredPlacements = CreateSpheredPlacements(args.ctx);
             if (spheredPlacements is null) yield break;
 
             yield return (LogSpheres(spheredPlacements, args), "OrderedItemProgressionSpoilerLog.txt");
             
-            List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args);
+            List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, args.ctx);
 #if DEBUG
             yield return (LogSpheres(importantPlacements, args), "ReducedItemProgressionSpoilerLog.txt");
 #endif
             
-            List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, args);
+            List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, args.ctx);
             yield return (LogSpheres(filteredPlacements, args), "FilteredItemProgressionSpoilerLog.txt");
         }
 
 
-        public static List<List<ItemPlacement>> CreateSpheredPlacements(LogArguments args)
+        public static List<List<ItemPlacement>> CreateSpheredPlacements(RandoModContext ctx)
         {
-            RCUtil.SetupPM(args.ctx, out _, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(ctx, out _, out ProgressionManager pm, out MainUpdater mu);
 
-            List<ItemPlacement> itemPlacements = args.ctx.itemPlacements;
+            List<ItemPlacement> itemPlacements = ctx.itemPlacements;
             List<List<ItemPlacement>> spheredPlacements = new();
 
             while (itemPlacements.Count > 0)
@@ -110,14 +110,14 @@ namespace CondensedSpoilerLogger.Loggers
         }
 
         private const string DummyItemName = "csl_empty_item";
-        private RandoModItem MakeDummyItem()
+        private static RandoModItem MakeDummyItem()
             => new() { item = new EmptyItem(DummyItemName) };
 
-        public List<List<ItemPlacement>> ComputeImportantPlacements(List<List<ItemPlacement>> spheredPlacements, LogArguments args)
+        public static List<List<ItemPlacement>> ComputeImportantPlacements(List<List<ItemPlacement>> spheredPlacements, RandoModContext ctx)
         {
             List<List<ItemPlacement>> importantPlacements = new();
 
-            RCUtil.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             // All terms that might unlock something in a later sphere - either a location from a later sphere, or
             // a waypoint/vanilla placement/transition that the pm doesn't have yet
@@ -129,12 +129,12 @@ namespace CondensedSpoilerLogger.Loggers
                     if (wp.CanGet(pm)) continue;
                     foreach (Term term in wp.GetTerms()) terms.Add(term);
                 }
-                foreach (GeneralizedPlacement vpmt in args.ctx.Vanilla)
+                foreach (GeneralizedPlacement vpmt in ctx.Vanilla)
                 {
                     if (vpmt.Location.CanGet(pm)) continue;
                     foreach (Term term in vpmt.Location.GetTerms()) terms.Add(term);
                 }
-                foreach (TransitionPlacement tpmt in args.ctx.transitionPlacements ?? Enumerable.Empty<TransitionPlacement>())
+                foreach (TransitionPlacement tpmt in ctx.transitionPlacements ?? Enumerable.Empty<TransitionPlacement>())
                 {
                     if (tpmt.Source.CanGet(pm)) continue;
                     foreach (Term term in tpmt.Source.GetTerms()) terms.Add(term);
@@ -177,15 +177,15 @@ namespace CondensedSpoilerLogger.Loggers
         /// Given a collection of sphered placements, finds a minimal subset of them wrt inclusion such that
         /// all placements in the collection are reachable.
         /// </summary>
-        private List<List<ItemPlacement>> FilterImportantPlacements(List<List<ItemPlacement>> importantPlacements, LogArguments args)
+        public static List<List<ItemPlacement>> FilterImportantPlacements(List<List<ItemPlacement>> importantPlacements, RandoModContext ctx)
         {
-            List<List<ItemPlacement>> result = new ();
+            List<List<ItemPlacement>> result = new();
             foreach (List<ItemPlacement> sphere in importantPlacements)
             {
                 result.Add(new(sphere));
             }
 
-            RCUtil.SetupPM(args.ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            RCUtil.SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
             if (!RCUtil.ValidateReachable(result.SelectMany(x => x), pm, true))
             {
@@ -211,6 +211,15 @@ namespace CondensedSpoilerLogger.Loggers
             }
 
             return result;
+        }
+
+        public static ItemPlacement[] GetOrderedPlacements(RandoModContext ctx)
+        {
+            List<List<ItemPlacement>> spheredPlacements = CreateSpheredPlacements(ctx);
+            List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, ctx);
+            List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, ctx);
+
+            return filteredPlacements.SelectMany(x => x).ToArray();
         }
     }
 }
