@@ -21,6 +21,8 @@ namespace CondensedSpoilerLogger.SpecificProgression
                 ("LEFTCLAW", QueryType.Term),
                 ("RIGHTDASH", QueryType.Term),
                 ("LEFTDASH", QueryType.LogicDef),
+                ("SPELLS>3", QueryType.TermValue),
+                ("SPELLS>6", QueryType.TermValue),
                 ("King_Fragment", QueryType.LogicDef),
                 ("Mines_20[right1]", QueryType.LogicDef)
             })

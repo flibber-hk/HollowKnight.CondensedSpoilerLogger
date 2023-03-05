@@ -41,15 +41,23 @@ namespace CondensedSpoilerLogger.SpecificProgression
 
         public ItemPlacement[] GetProgression(string query, QueryType queryType)
         {
-            return queryType switch
+            switch (queryType)
             {
-                QueryType.Term => GetProgressionForTerm(query),
-                QueryType.LogicDef => GetProgressionForLogicDef(query),
-                _ => null
-            };
+                case QueryType.Term:
+                    return GetProgressionForTerm(query);
+                case QueryType.LogicDef:
+                    return GetProgressionForLogicDef(query);
+                case QueryType.TermValue:
+                    string[] pieces = query.Split('>');
+                    if (pieces.Length != 2) return null;
+                    if (!int.TryParse(pieces[1], out int strictThreshold)) return null;
+                    return GetProgressionForTerm(pieces[0], strictThreshold + 1);
+            }
+
+            return null;
         }
 
-        public ItemPlacement[] GetProgressionForTerm(string term)
+        public ItemPlacement[] GetProgressionForTerm(string term, int threshold = 1)
         {
             RCUtil.SetupPM(_ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
 
@@ -59,7 +67,7 @@ namespace CondensedSpoilerLogger.SpecificProgression
                 return null;
             }
 
-            return GetProgressionForPredicate(() => pm.Has(t), pm);
+            return GetProgressionForPredicate(() => pm.Has(t, threshold), pm);
         }
 
         public ItemPlacement[] GetProgressionForLogicDef(string logicDef)
@@ -80,7 +88,7 @@ namespace CondensedSpoilerLogger.SpecificProgression
             pm.Reset();
             pm.mu.StartUpdating();
 
-            int i = 0; // The number of placements we've taken
+            int i = 0; // The number of placements we've taken at the end of each loop
             while (!predicate())
             {
                 if (i >= _orderedPlacements.Length)

@@ -3,6 +3,7 @@
     public enum QueryType
     {
         Term,
+        TermValue,
         LogicDef,
     }
 }

@@ -24,6 +24,7 @@ namespace CondensedSpoilerLogger.SpecificProgression
             string header = queryType switch
             {
                 QueryType.Term => $"Progression for term {query}",
+                QueryType.TermValue => $"Progression for term {query}",
                 QueryType.LogicDef => $"Progression for logic def {query}",
                 _ => $"Progression for {query}"
             };
