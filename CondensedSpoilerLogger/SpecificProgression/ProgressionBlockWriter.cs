@@ -1,14 +1,11 @@
 ﻿using RandomizerMod.RC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace CondensedSpoilerLogger.SpecificProgression
 {
     public class ProgressionBlockWriter
     {
-        private SpoilerReader _sr;
+        private readonly SpoilerReader _sr;
         
         public ProgressionBlockWriter(RandoModContext ctx)
         {

@@ -1,10 +1,6 @@
 ﻿using RandomizerMod.Logging;
-using RandomizerMod.RC;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CondensedSpoilerLogger.SpecificProgression
 {
@@ -13,8 +9,7 @@ namespace CondensedSpoilerLogger.SpecificProgression
 
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
-            Calculator calc = new(args.ctx, out _);
-            ProgressionBlockWriter writer = new(args.ctx);
+            CalcWriter cw = new(args.ctx);
 
             StringBuilder sb = new();
 
@@ -26,12 +21,12 @@ namespace CondensedSpoilerLogger.SpecificProgression
             {
                 ("LEFTCLAW", QueryType.Term),
                 ("RIGHTDASH", QueryType.Term),
+                ("LEFTDASH", QueryType.LogicDef),
                 ("King_Fragment", QueryType.LogicDef),
                 ("Mines_20[right1]", QueryType.LogicDef)
             })
             {
-                ItemPlacement[] pmts = calc.GetProgression(query, queryType);
-                sb.Append(writer.WriteProgression(pmts, query, queryType));
+                sb.Append(cw.ComputeProgressionString(query, queryType));
                 sb.AppendLine();
                 sb.AppendLine();
             }
