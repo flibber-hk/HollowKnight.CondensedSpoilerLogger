@@ -8,6 +8,7 @@ namespace CondensedSpoilerLogger.SpecificProgression
     /// </summary>
     public class CalcWriter
     {
+        private readonly RandoModContext _ctx;
         private readonly Calculator _calc;
         private readonly ProgressionBlockWriter _writer;
 
@@ -19,8 +20,28 @@ namespace CondensedSpoilerLogger.SpecificProgression
 
         public string ComputeProgressionString(string query, QueryType queryType)
         {
+            if (queryType == QueryType.Unknown)
+            {
+                queryType = InferQueryType(query, _ctx);
+            }
             ItemPlacement[] pmts = _calc.GetProgression(query, queryType);
             return _writer.WriteProgression(pmts, query, queryType);
+        }
+
+        public static QueryType InferQueryType(string query, RandoModContext ctx)
+        {
+            if (query.Contains("<"))
+            {
+                return QueryType.TermValue;
+            }
+
+            bool isTerm = ctx.LM.GetTerm(query) != null;
+            bool isLogicDef = ctx.LM.GetLogicDef(query) != null;
+
+            if (isTerm && !isLogicDef) return QueryType.Term;
+            if (isLogicDef && !isTerm) return QueryType.LogicDef;
+
+            return QueryType.Unknown;
         }
     }
 }
