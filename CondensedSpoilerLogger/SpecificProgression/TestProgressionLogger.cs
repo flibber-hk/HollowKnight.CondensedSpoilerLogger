@@ -6,7 +6,6 @@ namespace CondensedSpoilerLogger.SpecificProgression
 {
     internal class TestProgressionLogger : CslLogger
     {
-
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             CalcWriter cw = new(args.ctx);
