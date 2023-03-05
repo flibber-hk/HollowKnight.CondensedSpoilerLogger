@@ -219,7 +219,7 @@ namespace CondensedSpoilerLogger.Loggers
             List<List<ItemPlacement>> importantPlacements = ComputeImportantPlacements(spheredPlacements, ctx);
             List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, ctx);
 
-            return filteredPlacements.SelectMany(x => x).ToArray();
+            return filteredPlacements.SelectMany(x => x).Where(x => x.Item.Name != DummyItemName).ToArray();
         }
     }
 }
