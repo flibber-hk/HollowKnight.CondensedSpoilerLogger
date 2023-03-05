@@ -34,7 +34,7 @@ This option can be disabled in the global settings.
 
 ## Global Settings
 
-Any of the logs can be disabled in the global settings file. Once a log has been written once, its filename should appear in the
+Any of the logs can be disabled in the global settings file. Once a log has been written once, its logger name should appear in the
 global settings. Set the value to `false` in order to prevent writing that log in future.
 
 ## Translation

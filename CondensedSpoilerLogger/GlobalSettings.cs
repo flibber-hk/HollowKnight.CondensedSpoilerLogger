@@ -4,7 +4,7 @@ namespace CondensedSpoilerLogger
 {
     public class GlobalSettings
     {
-        public Dictionary<string, bool> WrittenLogs = new();
+        public Dictionary<string, bool> WritableLogs = new();
         public bool DisplayWriteLogsButton = true;
     }
 }
