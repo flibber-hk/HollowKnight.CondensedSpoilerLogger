@@ -39,7 +39,6 @@ namespace CondensedSpoilerLogger.SpecificProgression
         private static RandoModItem MakeDummyItem()
             => new() { item = new EmptyItem(DummyItemName) };
 
-
         public ItemPlacement[] GetProgressionForTerm(string term)
         {
             RCUtil.SetupPM(_ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
