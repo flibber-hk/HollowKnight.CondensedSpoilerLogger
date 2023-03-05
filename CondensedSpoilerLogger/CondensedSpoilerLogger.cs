@@ -5,7 +5,6 @@ using CondensedSpoilerLogger.Loggers;
 using System.Collections.Generic;
 using RandomizerMod.RC;
 using CondensedSpoilerLogger.Interop;
-using System.Reflection;
 
 namespace CondensedSpoilerLogger
 {
@@ -41,6 +40,9 @@ namespace CondensedSpoilerLogger
             yield return new ItemGroupSpoiler();
             yield return new AreaTransitionSpoiler();
             yield return new ItemProgressionSpoiler();
+#if DEBUG
+            yield return new SpecificProgression.TestProgressionLogger();
+#endif
         }
 
         public static void WriteCslLogs()
