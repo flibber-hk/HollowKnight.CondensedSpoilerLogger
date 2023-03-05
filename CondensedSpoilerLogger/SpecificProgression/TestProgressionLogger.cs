@@ -14,34 +14,27 @@ namespace CondensedSpoilerLogger.SpecificProgression
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             Calculator calc = new(args.ctx, out _);
+            ProgressionBlockWriter writer = new(args.ctx);
 
-            SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
 
             sb.AppendLine($"Test progression log for seed {args.gs.Seed}");
             sb.AppendLine();
             sb.AppendLine();
 
-            sb.AppendLine("LEFTCLAW");
-            foreach (ItemPlacement pmt in calc.GetProgressionForTerm("LEFTCLAW"))
+            foreach ((string query, QueryType queryType) in new List<(string, QueryType)>()
             {
-                sr.AddPlacementToStringBuilder(sb, pmt);
-            }
-            sb.AppendLine();
-
-            sb.AppendLine("RIGHTDASH");
-            foreach (ItemPlacement pmt in calc.GetProgressionForTerm("RIGHTDASH"))
+                ("LEFTCLAW", QueryType.Term),
+                ("RIGHTDASH", QueryType.Term),
+                ("King_Fragment", QueryType.LogicDef),
+                ("Mines_20[right1]", QueryType.LogicDef)
+            })
             {
-                sr.AddPlacementToStringBuilder(sb, pmt);
+                ItemPlacement[] pmts = calc.GetProgression(query, queryType);
+                sb.Append(writer.WriteProgression(pmts, query, queryType));
+                sb.AppendLine();
+                sb.AppendLine();
             }
-            sb.AppendLine();
-
-            sb.AppendLine("King_Fragment");
-            foreach (ItemPlacement pmt in calc.GetProgressionForLogicDef("King_Fragment"))
-            {
-                sr.AddPlacementToStringBuilder(sb, pmt);
-            }
-            sb.AppendLine();
 
             yield return new(sb.ToString(), "TestLog.txt");
         }

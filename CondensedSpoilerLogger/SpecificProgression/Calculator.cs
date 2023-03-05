@@ -39,6 +39,16 @@ namespace CondensedSpoilerLogger.SpecificProgression
         private static RandoModItem MakeDummyItem()
             => new() { item = new EmptyItem(DummyItemName) };
 
+        public ItemPlacement[] GetProgression(string query, QueryType queryType)
+        {
+            return queryType switch
+            {
+                QueryType.Term => GetProgressionForTerm(query),
+                QueryType.LogicDef => GetProgressionForLogicDef(query),
+                _ => null
+            };
+        }
+
         public ItemPlacement[] GetProgressionForTerm(string term)
         {
             RCUtil.SetupPM(_ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
