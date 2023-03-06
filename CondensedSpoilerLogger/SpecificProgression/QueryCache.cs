@@ -10,7 +10,7 @@ namespace CondensedSpoilerLogger.SpecificProgression
         public override void Initialize() { }
         public override void Unload() { }
 
-        public CacheDict Cache;
+        public CacheDict Cache = new();
 
         /// <summary>
         /// Thread safe - record the given query result

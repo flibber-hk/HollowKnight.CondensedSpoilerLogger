@@ -74,6 +74,7 @@ namespace CondensedSpoilerLogger
             RBDebug.Hook();
 
             DebugMod.AddActionToKeyBindList(WriteCslLogs, "Write Csl Logs");
+            DebugMod.AddActionToKeyBindList(SpecificProgression.QueryManager.MakeQueryFileLog, "Write Query Log");
         }
     }
 }
