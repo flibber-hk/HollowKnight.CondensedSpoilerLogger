@@ -10,31 +10,31 @@ namespace CondensedSpoilerLogger
 {
     internal class CslLogWriter : RandoLogger
     {
+        internal static CslLogWriter Instance { get; } = new();
+
+        internal void Hook()
+        {
+            // To do - set up cancellation for if they quit to menu during computation
+        }
+
         public override void Log(LogArguments args)
         {
-            IEnumerator<(string text, string filename)> logData = CondensedSpoilerLogger.CreateLoggers()
-                .Select(log => log.GetLogTexts(args).GetEnumerator())
-                .Chain();
-
-            if (!logData.MoveNext()) return;
-            MakeLogRequest(logData.Current.text, logData.Current.filename, logData);
+            Task.Factory.StartNew(CreateLoggingAction(args));
         }
 
-        private void MakeLogRequest(string text, string filename, IEnumerator<(string text, string filename)> remaining)
+        private Action CreateLoggingAction(LogArguments args)
         {
-            LogManager.Write(
-                tw =>
+            void DoLogging()
+            {
+                foreach ((string text, string filename) in 
+                    CondensedSpoilerLogger.CreateLoggers().SelectMany(log => log.GetLogTexts(args)))
                 {
-                    CondensedSpoilerLogger.instance.LogDebug($"Writing Csl log to {filename}");
-                    tw.Write(text);
-                    if (!remaining.MoveNext())
-                    {
-                        CondensedSpoilerLogger.instance.Log($"Completed logging");
-                        remaining?.Dispose();
-                        return;
-                    }
-                    MakeLogRequest(remaining.Current.text, remaining.Current.filename, remaining);
-                }, filename);
+                    LogManager.Write(text, filename);
+                }
+            }
+            
+            return DoLogging;
         }
+
     }
 }

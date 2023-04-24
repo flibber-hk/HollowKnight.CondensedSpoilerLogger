@@ -65,7 +65,8 @@ namespace CondensedSpoilerLogger
         {
             Log("Initializing Mod...");
 
-            ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(new CslLogWriter());
+            CslLogWriter.Instance.Hook();
+            ModHooks.FinishedLoadingModsHook += () => LogManager.AddLogger(CslLogWriter.Instance);
 
             CslMenu.Hook();
 
