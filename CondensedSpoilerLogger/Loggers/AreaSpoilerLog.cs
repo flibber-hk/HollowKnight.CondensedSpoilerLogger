@@ -61,20 +61,30 @@ namespace CondensedSpoilerLogger.Loggers
 
     internal class AreaSpoilerLog : CslLogger
     {
+        /// <summary>
+        /// Sorts strings by putting Other to the end, and optionally the supplied header to the start.
+        /// </summary>
         private class AreaNameOrderingStringComparer : IComparer<string>
         {
+            private string header;
+            public AreaNameOrderingStringComparer(string header)
+            {
+                this.header = header;
+            }
+            public AreaNameOrderingStringComparer() : this(string.Empty) { }
+
             int IComparer<string>.Compare(string x, string y)
             {
                 if (x == y) return 0;
 
                 if (x == AreaSpoilerLogExtensions.Other) return 1;
                 if (y == AreaSpoilerLogExtensions.Other) return -1;
+                if (x == header) return -1;
+                if (y == header) return 1;
 
                 return StringComparer.InvariantCulture.Compare(x, y);
             }
         }
-
-        private static readonly IComparer<string> AreaNameOrdering = new AreaNameOrderingStringComparer();
 
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
@@ -99,10 +109,10 @@ namespace CondensedSpoilerLogger.Loggers
 
             sb.AppendLine($"Area spoiler log for seed: {args.gs.Seed}");
             sb.AppendLine();
-            foreach (var mapAreaGroup in LocationGrouping.MoveMatchesToEnd(kvp => kvp.Key == AreaSpoilerLogExtensions.Other).Select(kvp => kvp.Value))
+            foreach ((string mapArea, var mapAreaGroup) in LocationGrouping.OrderBy(kvp => kvp.Key, new AreaNameOrderingStringComparer(LocationNames.Start)))
             {
                 foreach ((string titledArea, HashSet<string> titledAreaLocations)
-                    in mapAreaGroup.MoveMatchesToEnd(kvp => kvp.Key == AreaSpoilerLogExtensions.Other))
+                    in mapAreaGroup.OrderBy(kvp => kvp.Key, new AreaNameOrderingStringComparer(mapArea)))
                 {
                     bool anyNonMultiLocations = titledAreaLocations.Any(x => !multiLocations.Contains(x));
 
