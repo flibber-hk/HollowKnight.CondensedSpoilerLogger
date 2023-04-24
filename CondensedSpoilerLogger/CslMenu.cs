@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using RandomizerMod.Logging;
 using RandomizerMod.Menu;
 using RandomizerMod.RC;
+using System;
 using UnityEngine.UI;
 using static RandomizerMod.Localization;
 using DirectoryOptions = RandomizerMod.Menu.RandomizerMenu.DirectoryOptions;
@@ -34,8 +35,11 @@ namespace CondensedSpoilerLogger
                 {
                     return;
                 }
-                
-                ReflectionHelper.CallMethod(typeof(LogManager), "WriteLogs", rc.args);
+
+                LogArguments args = new() { ctx = rc.ctx, gs = rc.gs, randomizer = rc.randomizer };
+                ReflectionHelper.GetField<Action<LogArguments>>(typeof(RandoController), nameof(RandoController.OnCreateLogArguments))?.Invoke(args);
+
+                ReflectionHelper.CallMethod(typeof(LogManager), "WriteLogs", args);
                 LogManager.Write((tw) =>
                 {
                     using JsonTextWriter jtr = new(tw);
