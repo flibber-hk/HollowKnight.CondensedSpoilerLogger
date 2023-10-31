@@ -39,6 +39,7 @@ namespace CondensedSpoilerLogger
             yield return new NotchCostSpoiler();
             yield return new AreaSpoilerLog();
             yield return new ItemGroupSpoiler();
+            yield return new SpendableSpoiler();
             yield return new AreaTransitionSpoiler();
             yield return new ItemProgressionSpoiler();
         }
