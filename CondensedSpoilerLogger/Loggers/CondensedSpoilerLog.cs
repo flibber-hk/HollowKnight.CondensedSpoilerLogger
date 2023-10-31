@@ -94,7 +94,7 @@ namespace CondensedSpoilerLogger.Loggers
             sr.AddItemToStringBuilder(sb, ItemNames.Stag_Nest_Stag);
             sb.AppendLine();
 
-            sb.AppendLine("----------Keys: ----------");
+            sb.AppendLine("----------Keys:----------");
             sr.AddItemToStringBuilder(sb, ItemNames.Simple_Key);
             sr.AddItemToStringBuilder(sb, ItemNames.Shopkeepers_Key);
             sr.AddItemToStringBuilder(sb, ItemNames.Elegant_Key);
@@ -135,6 +135,21 @@ namespace CondensedSpoilerLogger.Loggers
             sr.AddItemToStringBuilder(sb, ItemNames.Weaversong);
             sr.AddItemToStringBuilder(sb, ItemNames.Mark_of_Pride);
             sb.AppendLine();
+
+            sb.AppendLine("----------Maps:----------");
+            sr.AddItemToStringBuilder(sb, ItemNames.Ancient_Basin_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.City_of_Tears_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Crossroads_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Crystal_Peak_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Deepnest_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Fog_Canyon_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Fungal_Wastes_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Greenpath_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Howling_Cliffs_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Kingdoms_Edge_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Queens_Gardens_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Resting_Grounds_Map);
+            sr.AddItemToStringBuilder(sb, ItemNames.Royal_Waterways_Map);
 
             foreach ((string name, Func<LogArguments, bool> test, List<string> items) in API.GetAdditionalCategories())
             {
