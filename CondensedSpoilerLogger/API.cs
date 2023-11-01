@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MonoMod.ModInterop;
 using RandomizerMod.Logging;
 
@@ -8,6 +7,8 @@ namespace CondensedSpoilerLogger
 {
     public static class API
     {
+        private static Modding.ILogger _logger = new Modding.SimpleLogger("CondensedSpoilerLogger.API");
+
         [ModExportName(nameof(CondensedSpoilerLogger))]
         internal static class Export
         {
@@ -33,6 +34,7 @@ namespace CondensedSpoilerLogger
         public static void AddCategory(string categoryName, Func<LogArguments, bool> test, List<string> entries)
         {
             AdditionalCategories.Add((categoryName, test, entries));
+            _logger.LogDebug($"Received category {categoryName} with up to {entries.Count} distinct entries.");
         }
 
         internal static IEnumerable<(string, Func<LogArguments, bool>, List<string>)> GetAdditionalCategories()
