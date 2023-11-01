@@ -94,7 +94,7 @@ namespace CondensedSpoilerLogger.Loggers
             sr.AddItemToStringBuilder(sb, ItemNames.Stag_Nest_Stag);
             sb.AppendLine();
 
-            sb.AppendLine("----------Keys: ----------");
+            sb.AppendLine("----------Keys:----------");
             sr.AddItemToStringBuilder(sb, ItemNames.Simple_Key);
             sr.AddItemToStringBuilder(sb, ItemNames.Shopkeepers_Key);
             sr.AddItemToStringBuilder(sb, ItemNames.Elegant_Key);
