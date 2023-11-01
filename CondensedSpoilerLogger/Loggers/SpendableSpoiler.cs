@@ -21,7 +21,7 @@ namespace CondensedSpoilerLogger.Loggers
             SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
 
-            sb.AppendLine($"Spendable spoiler log for seed: {args.gs.Seed}");
+            sb.AppendLine($"Currency spoiler log for seed: {args.gs.Seed}");
             sb.AppendLine();
 
             int count = 0;
@@ -31,7 +31,7 @@ namespace CondensedSpoilerLogger.Loggers
 
             if (count == 0) yield break;
 
-            yield return (sb.ToString(), "SpendableSpoilerLog.txt");
+            yield return (sb.ToString(), "CurrencySpoilerLog.txt");
         }
 
         private int WriteItems(string term, SpoilerReader sr, StringBuilder sb, string title, LogArguments args)

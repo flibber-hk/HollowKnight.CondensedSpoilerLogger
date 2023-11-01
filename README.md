@@ -14,6 +14,7 @@ for instance, the log may list all stags besides Stag Nest Stag (which unlocks s
 of these can be removed, even though the number of items in the log can be reduced.
 - CollectedItemSpoiler: Collects locations with the same item and groups them together. Items which appear only once are placed
 at the bottom of the log.
+- CurrencySpoilerLog: Collects randomized currency items (geo, essence) and displays them ordered by amount.
 - SourceTransitionSpoiler / TargetTransitionSpoiler: If transitions are randomized, lists transition placements grouped by area.
 The first log groups placements by the source transition, the second groups placements by the target.
 For the most part, this distinction only matters when transitions are not coupled.
