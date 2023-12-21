@@ -41,12 +41,12 @@ jobs:
         run: dotnet build -c Release
 
       - name: Prepare artifacts for release
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CondensedSpoilerLogger
           path: CondensedSpoilerLogger/bin/Publish/CondensedSpoilerLogger/zip
       - name: Upload metadata
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: metadata
           path: CondensedSpoilerLogger/bin/Publish/CondensedSpoilerLogger/metadata
