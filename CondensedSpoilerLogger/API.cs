@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MonoMod.ModInterop;
 using RandomizerMod.Logging;
+using Category = CondensedSpoilerLogger.Loggers.CondensedSpoilerLog.Category;
 
 namespace CondensedSpoilerLogger
 {
@@ -23,7 +24,7 @@ namespace CondensedSpoilerLogger
                 => API.AddCategory(categoryName, _ => test(), entries);
         }
 
-        private static List<(string, Func<LogArguments, bool>, List<string>)> AdditionalCategories = new();
+        private static List<Category> AdditionalCategories = new();
 
         /// <summary>
         /// Add a category to the Condensed Spoiler Log.
@@ -33,11 +34,11 @@ namespace CondensedSpoilerLogger
         /// <param name="entries">A list of items to log in the category.</param>
         public static void AddCategory(string categoryName, Func<LogArguments, bool> test, List<string> entries)
         {
-            AdditionalCategories.Add((categoryName, test, entries));
+            AdditionalCategories.Add(new(categoryName, test, entries));
             _logger.LogDebug($"Received category {categoryName} with up to {entries.Count} distinct entries.");
         }
 
-        internal static IEnumerable<(string, Func<LogArguments, bool>, List<string>)> GetAdditionalCategories()
+        internal static IEnumerable<Category> GetAdditionalCategories()
         {
             return AdditionalCategories;
         }

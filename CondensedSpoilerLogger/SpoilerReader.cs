@@ -14,8 +14,10 @@ namespace CondensedSpoilerLogger
 {
     public class SpoilerReader
     {
-        private readonly Dictionary<string, List<(string location, string costText)>> placementsByItem;
-        private readonly Dictionary<string, List<(string item, string costText)>> placementsByLocation;
+        private static readonly ILogger _logger = new SimpleLogger("CondensedSpoilerLogger.SpoilerReader");
+
+        private readonly Dictionary<string, List<(string location, string costText)>> placementsByItem = new();
+        private readonly Dictionary<string, List<(string item, string costText)>> placementsByLocation = new();
         private readonly Dictionary<string, string> itemUINames = new();
 
         public IEnumerable<string> EnumerateItems() => placementsByItem.Keys;
@@ -65,42 +67,97 @@ namespace CondensedSpoilerLogger
 
         public SpoilerReader(RandoModContext ctx)
         {
-            List<ItemPlacement> raw = ctx.itemPlacements;
-
-            placementsByItem = new();
-            placementsByLocation = new();
-            foreach (ItemPlacement placement in raw)
+            foreach (ItemPlacement placement in ctx.itemPlacements)
             {
-                RandoItem item = placement.Item;
-                if (item is PlaceholderItem { innerItem: RandoItem itm })
-                {
-                    item = itm;
-                }
-
-                string itemName = item.Name;
-                if (item.item is SplitCloakItem sc)
-                {
-                    itemName = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
-                }
-
-                string locationName = placement.Location.Name;
-                string costText = GetCostText(placement);
-
-                if (!placementsByItem.TryGetValue(itemName, out List<(string, string)> locations))
-                {
-                    placementsByItem[itemName] = locations = new();
-                }
-                locations.Add((locationName, costText));
-
-                if (!placementsByLocation.TryGetValue(locationName, out List<(string, string)> items))
-                {
-                    placementsByLocation[locationName] = items = new();
-                }
-                items.Add((itemName, costText));
+                ProcessPlacement(placement);
             }
 
             ApplyMerges();
             AddNotchCosts(ctx);
+        }
+
+        private void ProcessPlacement(ItemPlacement pmt)
+        {
+            RandoItem item = pmt.Item;
+            if (item is PlaceholderItem { innerItem: RandoItem itm })
+            {
+                item = itm;
+            }
+
+            string itemName = item.Name;
+            if (item.item is SplitCloakItem sc)
+            {
+                itemName = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
+            }
+
+            string locationName = pmt.Location.Name;
+            string costText = GetCostText(pmt);
+
+            ProcessPlacement(itemName, locationName, costText);
+        }
+
+        /// <summary>
+        /// Record a placement indicated by the given item being at the given location and cost.
+        /// </summary>
+        private void ProcessPlacement(string itemName, string locationName, string costText = "")
+        {
+            if (!placementsByItem.TryGetValue(itemName, out List<(string, string)> locations))
+            {
+                placementsByItem[itemName] = locations = new();
+            }
+            locations.Add((locationName, costText));
+
+            if (!placementsByLocation.TryGetValue(locationName, out List<(string, string)> items))
+            {
+                placementsByLocation[locationName] = items = new();
+            }
+            items.Add((itemName, costText));
+        }
+
+        /// <summary>
+        /// Create a SpoilerReader encompassing only the items which belong to a (specified) remote player.
+        /// 
+        /// Because of how Multiworld works, these items will only be those which appear in the current player's world.
+        /// </summary>
+        /// <param name="ctx">The RandoModContext</param>
+        /// <param name="remotePlayerName">The name of the specified remote player.</param>
+        public SpoilerReader(RandoModContext ctx, string remotePlayerName)
+        {
+            Regex suffix = new(@"_\(\d+\)$");
+
+            string prefix = remotePlayerName + "'s ";
+
+            int count = 0;
+            foreach (ItemPlacement placement in ctx.itemPlacements)
+            {
+                string itemName = placement.Item.Name;
+                string locationName = placement.Location.Name;
+
+                if (!itemName.StartsWith(prefix))
+                {
+                    continue;
+                }
+
+                itemName = itemName.Substring(prefix.Length);
+                if (!suffix.IsMatch(itemName))
+                {
+                    _logger.LogDebug($"Failed to remove suffix from placement: {placement.Item.Name}, {placement.Location.Name}");
+                    continue;
+                }
+                itemName = suffix.Replace(itemName, string.Empty);
+
+                ProcessPlacement(itemName, locationName, GetCostText(placement));
+                count += 1;
+            }
+
+            _logger.LogDebug($"Processed {count} placements for player {remotePlayerName}");
+
+            ApplyMerges();
+
+            foreach (string item in placementsByItem.Keys)
+            {
+                itemUINames.Add(item, prefix + item);
+            }
         }
 
         private void AddNotchCosts(RandoModContext ctx)
@@ -113,6 +170,9 @@ namespace CondensedSpoilerLogger
             }    
         }
 
+        /// <summary>
+        /// Record certain items as being the same
+        /// </summary>
         private void ApplyMerges()
         {
             MergeItems(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak);

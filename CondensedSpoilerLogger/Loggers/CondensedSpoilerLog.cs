@@ -1,18 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using RandomizerMod.Logging;
-using RandomizerMod.RC;
-using RandomizerCore;
-using RandomizerCore.Logic;
 using ItemChanger;
 
 namespace CondensedSpoilerLogger.Loggers
 {
     public class CondensedSpoilerLog : CslLogger
     {
+        public record Category(string Name, Func<LogArguments, bool> Test, List<string> Items);
+
+
+        private static readonly List<Category> DefaultCategories = new()
+        {
+            new("Dreamers", (args) => true, new()
+            {
+                ItemNames.Lurien,
+                ItemNames.Monomon,
+                ItemNames.Herrah,
+            }),
+
+            new("White Fragments", (args) => true, new()
+            {
+                ItemNames.Kingsoul,
+            }),
+
+            new("Stag Stations", (args) => true, new()
+            {
+                ItemNames.Dirtmouth_Stag,
+                ItemNames.Crossroads_Stag,
+                ItemNames.Greenpath_Stag,
+                ItemNames.Queens_Station_Stag,
+                ItemNames.Queens_Gardens_Stag,
+                ItemNames.City_Storerooms_Stag,
+                ItemNames.Kings_Station_Stag,
+                ItemNames.Resting_Grounds_Stag,
+                ItemNames.Distant_Village_Stag,
+                ItemNames.Hidden_Station_Stag,
+                ItemNames.Stag_Nest_Stag,
+            }),
+            new("Keys", (args) => true, new()
+            {
+                ItemNames.Simple_Key,
+                ItemNames.Shopkeepers_Key,
+                ItemNames.Elegant_Key,
+                ItemNames.Love_Key,
+                ItemNames.Tram_Pass,
+                ItemNames.Elevator_Pass,
+                ItemNames.Lumafly_Lantern,
+                ItemNames.Kings_Brand,
+                ItemNames.City_Crest,
+            }),
+            new("Quest Charms", (args) => true, new()
+            {
+                "Grimmchild",
+                ItemNames.Spore_Shroom,
+                ItemNames.Defenders_Crest,
+                ItemNames.Fragile_Strength,
+                ItemNames.Fragile_Greed,
+                ItemNames.Fragile_Heart,
+            }),
+            new("Lifeblood Charms", (args) => true, new()
+            {
+                ItemNames.Lifeblood_Heart,
+                ItemNames.Lifeblood_Core,
+                ItemNames.Jonis_Blessing,
+            }),
+            new("Useful Charms", (args) => true, new()
+            {
+                ItemNames.Dashmaster,
+                ItemNames.Shaman_Stone,
+                ItemNames.Spell_Twister,
+                ItemNames.Quick_Slash,
+                ItemNames.Wayward_Compass,
+            }),
+            new("Baldur Killers", (args) => true, new()
+            {
+                ItemNames.Grubberflys_Elegy,
+                ItemNames.Glowing_Womb,
+                ItemNames.Weaversong,
+                ItemNames.Mark_of_Pride,
+            }),
+        };
+
+        private static IEnumerable<Category> GetCategories()
+        {
+            foreach (Category cat in DefaultCategories)
+            {
+                yield return cat;
+            }
+            
+            foreach (Category cat in API.GetAdditionalCategories())
+            {
+                yield return cat;
+            }
+        }
+
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             SpoilerReader sr = new(args.ctx);
@@ -69,81 +152,15 @@ namespace CondensedSpoilerLogger.Loggers
             }
             sb.AppendLine();
 
-            sb.AppendLine("----------Dreamers:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Lurien);
-            sr.AddItemToStringBuilder(sb, ItemNames.Monomon);
-            sr.AddItemToStringBuilder(sb, ItemNames.Herrah);
-            sr.AddItemToStringBuilder(sb, ItemNames.Dreamer);
-            sb.AppendLine();
 
-            sb.AppendLine("----------White Fragments:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Kingsoul);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Stag Stations:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Dirtmouth_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Crossroads_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Greenpath_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Queens_Station_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Queens_Gardens_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.City_Storerooms_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Kings_Station_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Resting_Grounds_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Distant_Village_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Hidden_Station_Stag);
-            sr.AddItemToStringBuilder(sb, ItemNames.Stag_Nest_Stag);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Keys:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Simple_Key);
-            sr.AddItemToStringBuilder(sb, ItemNames.Shopkeepers_Key);
-            sr.AddItemToStringBuilder(sb, ItemNames.Elegant_Key);
-            sr.AddItemToStringBuilder(sb, ItemNames.Love_Key);
-            sr.AddItemToStringBuilder(sb, ItemNames.Tram_Pass);
-            sr.AddItemToStringBuilder(sb, ItemNames.Elevator_Pass);
-            sr.AddItemToStringBuilder(sb, ItemNames.Lumafly_Lantern);
-            sr.AddItemToStringBuilder(sb, ItemNames.Kings_Brand);
-            sr.AddItemToStringBuilder(sb, ItemNames.City_Crest);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Quest Charms:----------");
-            sr.AddItemToStringBuilder(sb, "Grimmchild");
-            sr.AddItemToStringBuilder(sb, ItemNames.Spore_Shroom);
-            sr.AddItemToStringBuilder(sb, ItemNames.Defenders_Crest);
-            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Strength);
-            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Greed);
-            sr.AddItemToStringBuilder(sb, ItemNames.Fragile_Heart);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Lifeblood Charms:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Lifeblood_Heart);
-            sr.AddItemToStringBuilder(sb, ItemNames.Lifeblood_Core);
-            sr.AddItemToStringBuilder(sb, ItemNames.Jonis_Blessing);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Useful Charms:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Dashmaster);
-            sr.AddItemToStringBuilder(sb, ItemNames.Shaman_Stone);
-            sr.AddItemToStringBuilder(sb, ItemNames.Spell_Twister);
-            sr.AddItemToStringBuilder(sb, ItemNames.Quick_Slash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Wayward_Compass);
-            sb.AppendLine();
-
-            sb.AppendLine("----------Baldur Killers:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Grubberflys_Elegy);
-            sr.AddItemToStringBuilder(sb, ItemNames.Glowing_Womb);
-            sr.AddItemToStringBuilder(sb, ItemNames.Weaversong);
-            sr.AddItemToStringBuilder(sb, ItemNames.Mark_of_Pride);
-            sb.AppendLine();
-
-            foreach ((string name, Func<LogArguments, bool> test, List<string> items) in API.GetAdditionalCategories())
+            foreach (Category cat in GetCategories())
             {
-                if (!test(args)) continue;
+                if (!cat.Test(args)) continue;
 
                 StringBuilder categorySB = new();
                 bool addedAny = false;
-                categorySB.AppendLine($"----------{name}:----------");
-                foreach (string item in items)
+                categorySB.AppendLine($"----------{cat.Name}:----------");
+                foreach (string item in cat.Items)
                 {
                     if (string.IsNullOrEmpty(item))
                     {
