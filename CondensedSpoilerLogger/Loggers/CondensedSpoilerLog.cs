@@ -18,6 +18,7 @@ namespace CondensedSpoilerLogger.Loggers
                 ItemNames.Lurien,
                 ItemNames.Monomon,
                 ItemNames.Herrah,
+                ItemNames.Dreamer,
             }),
 
             new("White Fragments", (args) => true, new()
