@@ -1,13 +1,11 @@
-﻿using ItemChanger;
+﻿using CondensedSpoilerLogger.Util;
 using RandomizerCore;
-using RandomizerCore.LogicItems;
+using RandomizerCore.Logic;
 using RandomizerMod.Logging;
 using RandomizerMod.RC;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CondensedSpoilerLogger.Loggers
 {
@@ -36,18 +34,10 @@ namespace CondensedSpoilerLogger.Loggers
 
         private int WriteItems(string term, SpoilerReader sr, StringBuilder sb, string title, LogArguments args)
         {
-            List<(ItemPlacement pmt, int amount)> data = new();
-
-            foreach (ItemPlacement pmt in args.ctx.itemPlacements)
+            if (!FindItems(args.ctx, term, out List<(ItemPlacement pmt, int amount)> data))
             {
-                string itemName = pmt.Item.Name;
-                if (args.ctx.LM.GetItem(itemName) is not SingleItem item) continue;
-                if (item.Effect.Term.Name != term) continue;
-
-                data.Add((pmt, item.Effect.Value));
+                return 0;
             }
-
-            if (data.Count == 0) return 0;
 
             data = data.OrderByDescending(pair => pair.amount).ToList();
 
@@ -60,6 +50,32 @@ namespace CondensedSpoilerLogger.Loggers
             sb.AppendLine();
 
             return data.Count;
+        }
+
+        private bool FindItems(RandoModContext ctx, string term, out List<(ItemPlacement pmt, int amount)> data)
+        {
+            data = new();
+
+            // Set up a single PM to use to determine item effects
+            RCUtil.SetupPM(ctx, out _, out ProgressionManager pm, out _);
+
+            foreach (ItemPlacement pmt in ctx.itemPlacements)
+            {
+                Logger.Log(pmt.Item.Name);
+
+                LogicItem item = pmt.Item.item;
+                if (item is null) continue;  // shouldn't happen
+                if (!item.GetAffectedTerms().Any(x => x.Name == term)) continue;
+
+                int initialValue = pm.Get(term);
+                pm.Add(item);
+                int amount = pm.Get(term) - initialValue;
+                pm.Reset();
+
+                data.Add((pmt, amount));
+            }
+
+            return data.Count > 0;
         }
     }
 }

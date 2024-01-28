@@ -10,6 +10,8 @@ namespace CondensedSpoilerLogger
     {
         protected abstract IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args);
 
+        protected Modding.ILogger Logger { get; }
+
         public IEnumerable<(string text, string filename)> GetLogTexts(LogArguments args) => CanWrite() 
             ? CreateLogTexts(args) 
             : Enumerable.Empty<(string, string)>();
@@ -18,6 +20,7 @@ namespace CondensedSpoilerLogger
         public CslLogger()
         {
             Name = GetType().Name;
+            Logger = new Modding.SimpleLogger($"CondensedSpoilerLogger:{Name}");
         }
 
         internal bool CanWrite()
