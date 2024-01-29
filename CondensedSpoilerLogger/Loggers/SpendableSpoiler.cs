@@ -61,8 +61,6 @@ namespace CondensedSpoilerLogger.Loggers
 
             foreach (ItemPlacement pmt in ctx.itemPlacements)
             {
-                Logger.Log(pmt.Item.Name);
-
                 LogicItem item = pmt.Item.item;
                 if (item is null) continue;  // shouldn't happen
                 if (!item.GetAffectedTerms().Any(x => x.Name == term)) continue;

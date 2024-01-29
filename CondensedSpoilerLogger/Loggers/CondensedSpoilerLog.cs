@@ -162,18 +162,44 @@ namespace CondensedSpoilerLogger.Loggers
             SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
 
+            sb.AppendLine($"Condensed spoiler log for seed: {args.gs.Seed}");
+            sb.AppendLine();
+            sb.Append(CreateCondensedSpoilerBody(sr.AddItemToStringBuilder, args));
+
+            yield return (sb.ToString(), "CondensedSpoilerLog.txt");
+        }
+
+        /// <summary>
+        /// Create the body of the condensed spoiler log.
+        /// </summary>
+        /// <param name="writeFunc">Callable that appends a named item to the condensed spoiler.
+        /// Most commonly will be SpoilerReader.AddItemToStringBuilder</param>
+        /// <returns></returns>
+        protected string CreateCondensedSpoilerBody(Func<StringBuilder, string, bool?, bool> writeFunc, LogArguments args)
+        {
             bool AddItemToStringBuilder(StringBuilder localSb, string item, bool forceMulti = false)
             {
                 bool ret = false;
                 foreach (string child in GetItems(item))
                 {
-                    ret |= sr.AddItemToStringBuilder(localSb, child, forceMulti);
+                    ret |= writeFunc(localSb, child, forceMulti);
                 }
                 return ret;
             }
 
-            sb.AppendLine($"Condensed spoiler log for seed: {args.gs.Seed}");
-            sb.AppendLine();
+            bool HasRandomizedAny(params string[] items)
+            {
+                StringBuilder miniSb = new();
+                bool any = false;
+                foreach (string item in items)
+                {
+                    any |= AddItemToStringBuilder(miniSb, item);
+                }
+                return any;
+            }
+
+
+            StringBuilder sb = new();
 
             sb.AppendLine("----------Major Progression:----------");
             AddItemToStringBuilder(sb, ItemNames.Mothwing_Cloak, forceMulti: true);
@@ -196,7 +222,9 @@ namespace CondensedSpoilerLogger.Loggers
             AddItemToStringBuilder(sb, ItemNames.Focus);
             sb.AppendLine();
 
-            if (sr.HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash))
+
+            bool anySlashes = HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash); ;
+            if (anySlashes)
             {
                 sb.AppendLine("----------Nail Slashes:----------");
             }
@@ -207,7 +235,7 @@ namespace CondensedSpoilerLogger.Loggers
             AddItemToStringBuilder(sb, ItemNames.Cyclone_Slash);
             AddItemToStringBuilder(sb, ItemNames.Great_Slash);
             AddItemToStringBuilder(sb, ItemNames.Dash_Slash);
-            if (sr.HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash))
+            if (anySlashes)
             {
                 sb.AppendLine();
                 AddItemToStringBuilder(sb, ItemNames.Leftslash);
@@ -244,7 +272,7 @@ namespace CondensedSpoilerLogger.Loggers
                 }
             }
 
-            yield return (sb.ToString(), "CondensedSpoilerLog.txt");
+            return sb.ToString();
         }
     }
 }
