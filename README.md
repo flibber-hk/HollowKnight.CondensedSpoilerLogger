@@ -18,6 +18,9 @@ at the bottom of the log.
 - SourceTransitionSpoiler / TargetTransitionSpoiler: If transitions are randomized, lists transition placements grouped by area.
 The first log groups placements by the source transition, the second groups placements by the target.
 For the most part, this distinction only matters when transitions are not coupled.
+- RemoteCondensedSpoilerLog / MultiworldCondensedSpoilerLog: If playing multiworld, the remote condensed spoiler is a copy of the 
+condensed spoiler containing only items belonging to other players placed in the local player's world that would be relevant for the
+condensed spoiler. The multiworld condensed spoiler lists items belonging to any player placed in the local player's world.
 
 Also adds an API for connections to add to the CondensedSpoilerLog.
 
