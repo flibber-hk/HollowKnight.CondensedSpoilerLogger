@@ -183,7 +183,7 @@ namespace CondensedSpoilerLogger.Loggers
         protected string CreateCondensedSpoilerBody(Func<StringBuilder, string, bool?, bool> writeFunc, LogArguments args)
         {
             // Proxy for sr.AddItemToStringBuilder (which should be the writeFunc) which respects item grouping
-            bool AddItemToStringBuilder(StringBuilder localSb, string item, bool forceMulti = false)
+            bool AddItemToStringBuilder(StringBuilder localSb, string item, bool? forceMulti = null)
             {
                 bool ret = false;
                 foreach (string child in GetItems(item))
