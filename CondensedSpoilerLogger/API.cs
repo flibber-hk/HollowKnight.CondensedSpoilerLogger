@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ItemChanger;
 using MonoMod.ModInterop;
 using RandomizerMod.Logging;
 using Category = CondensedSpoilerLogger.Loggers.CondensedSpoilerLog.Category;
