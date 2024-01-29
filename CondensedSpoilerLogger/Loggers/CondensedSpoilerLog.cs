@@ -134,6 +134,8 @@ namespace CondensedSpoilerLogger.Loggers
             return matches;
         }
 
+        // Given an item, enumerate all items that should be logged at the same time as it.
+        // e.g. after attempting to log Mothwing Cloak, Left/Right Mothwing Cloak should be logged.
         private static IEnumerable<string> GetItems(string item)
         {
             Queue<string> itemQueue = new();
