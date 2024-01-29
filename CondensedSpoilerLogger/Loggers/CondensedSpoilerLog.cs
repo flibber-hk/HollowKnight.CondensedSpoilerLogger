@@ -176,18 +176,12 @@ namespace CondensedSpoilerLogger.Loggers
 
             sb.AppendLine("----------Major Progression:----------");
             AddItemToStringBuilder(sb, ItemNames.Mothwing_Cloak, forceMulti: true);
-            AddItemToStringBuilder(sb, ItemNames.Left_Mothwing_Cloak, forceMulti: true);
-            AddItemToStringBuilder(sb, ItemNames.Right_Mothwing_Cloak, forceMulti: true);
             sb.AppendLine();
             AddItemToStringBuilder(sb, ItemNames.Mantis_Claw, forceMulti: true);
-            AddItemToStringBuilder(sb, ItemNames.Left_Mantis_Claw, forceMulti: true);
-            AddItemToStringBuilder(sb, ItemNames.Right_Mantis_Claw, forceMulti: true);
             sb.AppendLine();
             AddItemToStringBuilder(sb, ItemNames.Monarch_Wings, forceMulti: true);
             sb.AppendLine();
             AddItemToStringBuilder(sb, ItemNames.Crystal_Heart, forceMulti: true);
-            AddItemToStringBuilder(sb, ItemNames.Left_Crystal_Heart, forceMulti: true);
-            AddItemToStringBuilder(sb, ItemNames.Right_Crystal_Heart, forceMulti: true);
             sb.AppendLine();
             AddItemToStringBuilder(sb, ItemNames.Ismas_Tear, forceMulti: true);
             AddItemToStringBuilder(sb, ItemNames.Dream_Nail, forceMulti: true);
