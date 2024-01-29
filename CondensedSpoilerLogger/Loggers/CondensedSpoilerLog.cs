@@ -148,6 +148,7 @@ namespace CondensedSpoilerLogger.Loggers
                 string current = itemQueue.Dequeue();
                 if (seen.Contains(current)) continue;
 
+                seen.Add(current);
                 yield return current;
 
                 if (!matches.TryGetValue(current, out List<string> children)) continue;

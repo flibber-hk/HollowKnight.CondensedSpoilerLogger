@@ -79,6 +79,8 @@ namespace CondensedSpoilerLogger
             {
                 children.Add(child);
             }
+
+            _logger.LogFine($"Received match {parent} --> {child}");
         }
 
         internal static Dictionary<string, List<string>> GetAdditionalMatches()
