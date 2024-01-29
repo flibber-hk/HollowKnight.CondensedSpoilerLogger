@@ -161,12 +161,12 @@ namespace CondensedSpoilerLogger.Loggers
             SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
 
-            bool AddItemToStringBuilder(StringBuilder sb_, string item, bool forceMulti = false)
+            bool AddItemToStringBuilder(StringBuilder localSb, string item, bool forceMulti = false)
             {
                 bool ret = false;
                 foreach (string child in GetItems(item))
                 {
-                    ret |= sr.AddItemToStringBuilder(sb_, child, forceMulti);
+                    ret |= sr.AddItemToStringBuilder(localSb, child, forceMulti);
                 }
                 return ret;
             }
