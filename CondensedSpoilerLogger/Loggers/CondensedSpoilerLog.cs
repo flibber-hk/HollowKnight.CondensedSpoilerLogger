@@ -111,7 +111,7 @@ namespace CondensedSpoilerLogger.Loggers
                 ItemNames.Left_Mantis_Claw,
                 ItemNames.Right_Mantis_Claw,
             },
-            [ItemNames.Mothwing_Cloak] = new()
+            [ItemNames.Crystal_Heart] = new()
             {
                 ItemNames.Left_Crystal_Heart,
                 ItemNames.Right_Crystal_Heart,
