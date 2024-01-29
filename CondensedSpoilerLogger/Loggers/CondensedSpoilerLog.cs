@@ -118,7 +118,7 @@ namespace CondensedSpoilerLogger.Loggers
             },
         };
 
-        private static Dictionary<string, List<string>> GetMatches()
+        private static Dictionary<string, List<string>> GetFullMatchDict()
         {
             Dictionary<string, List<string>> matches = new(DefaultMatches);
 
@@ -141,7 +141,7 @@ namespace CondensedSpoilerLogger.Loggers
 
             HashSet<string> seen = new();
 
-            Dictionary<string, List<string>> matches = GetMatches();
+            Dictionary<string, List<string>> matches = GetFullMatchDict();
 
             while (itemQueue.Count > 0)
             {
