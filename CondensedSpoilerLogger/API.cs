@@ -13,7 +13,7 @@ namespace CondensedSpoilerLogger
     /// </summary>
     public static class API
     {
-        private static Modding.ILogger _logger = new Modding.SimpleLogger("CondensedSpoilerLogger.API");
+        private static readonly Modding.ILogger _logger = new Modding.SimpleLogger("CondensedSpoilerLogger.API");
 
         [ModExportName(nameof(CondensedSpoilerLogger))]
         internal static class Export
