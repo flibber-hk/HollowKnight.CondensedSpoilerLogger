@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using RandomizerMod.Logging;
 using ItemChanger;
+using Modding;
+using System.Linq;
 
 namespace CondensedSpoilerLogger.Loggers
 {
@@ -97,39 +99,101 @@ namespace CondensedSpoilerLogger.Loggers
             }
         }
 
+        private static readonly Dictionary<string, List<string>> DefaultMatches = new()
+        {
+            [ItemNames.Mothwing_Cloak] = new()
+            {
+                ItemNames.Left_Mothwing_Cloak,
+                ItemNames.Right_Mothwing_Cloak,
+            },
+            [ItemNames.Mantis_Claw] = new()
+            {
+                ItemNames.Left_Mantis_Claw,
+                ItemNames.Right_Mantis_Claw,
+            },
+            [ItemNames.Crystal_Heart] = new()
+            {
+                ItemNames.Left_Crystal_Heart,
+                ItemNames.Right_Crystal_Heart,
+            },
+        };
+
+        private static Dictionary<string, List<string>> GetFullMatchDict()
+        {
+            Dictionary<string, List<string>> matches = new(DefaultMatches);
+
+            foreach ((string parent, List<string> children) in API.GetAdditionalMatches())
+            {
+                if (!matches.TryGetValue(parent, out List<string> current))
+                {
+                    current = new();
+                }
+                matches[parent] = current.Concat(children).ToList();
+            }
+
+            return matches;
+        }
+
+        private static IEnumerable<string> GetItems(string item)
+        {
+            Queue<string> itemQueue = new();
+            itemQueue.Enqueue(item);
+
+            HashSet<string> seen = new();
+
+            Dictionary<string, List<string>> matches = GetFullMatchDict();
+
+            while (itemQueue.Count > 0)
+            {
+                string current = itemQueue.Dequeue();
+                if (seen.Contains(current)) continue;
+
+                seen.Add(current);
+                yield return current;
+
+                if (!matches.TryGetValue(current, out List<string> children)) continue;
+
+                foreach (string child in children) itemQueue.Enqueue(child);
+            }
+        }
+
         protected override IEnumerable<(string text, string filename)> CreateLogTexts(LogArguments args)
         {
             SpoilerReader sr = new(args.ctx);
             StringBuilder sb = new();
 
+            bool AddItemToStringBuilder(StringBuilder localSb, string item, bool forceMulti = false)
+            {
+                bool ret = false;
+                foreach (string child in GetItems(item))
+                {
+                    ret |= sr.AddItemToStringBuilder(localSb, child, forceMulti);
+                }
+                return ret;
+            }
+
             sb.AppendLine($"Condensed spoiler log for seed: {args.gs.Seed}");
             sb.AppendLine();
 
             sb.AppendLine("----------Major Progression:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Mothwing_Cloak, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Left_Mothwing_Cloak, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Right_Mothwing_Cloak, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Mothwing_Cloak, forceMulti: true);
             sb.AppendLine();
-            sr.AddItemToStringBuilder(sb, ItemNames.Mantis_Claw, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Left_Mantis_Claw, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Right_Mantis_Claw, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Mantis_Claw, forceMulti: true);
             sb.AppendLine();
-            sr.AddItemToStringBuilder(sb, ItemNames.Monarch_Wings, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Monarch_Wings, forceMulti: true);
             sb.AppendLine();
-            sr.AddItemToStringBuilder(sb, ItemNames.Crystal_Heart, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Left_Crystal_Heart, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Right_Crystal_Heart, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Crystal_Heart, forceMulti: true);
             sb.AppendLine();
-            sr.AddItemToStringBuilder(sb, ItemNames.Ismas_Tear, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Dream_Nail, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Swim, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Ismas_Tear, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Dream_Nail, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Swim, forceMulti: true);
             sb.AppendLine();
 
             sb.AppendLine("----------Spells:----------");
-            sr.AddItemToStringBuilder(sb, ItemNames.Vengeful_Spirit, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Desolate_Dive, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Howling_Wraiths, forceMulti: true);
-            sr.AddItemToStringBuilder(sb, ItemNames.Focus);
+            AddItemToStringBuilder(sb, ItemNames.Vengeful_Spirit, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Desolate_Dive, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Howling_Wraiths, forceMulti: true);
+            AddItemToStringBuilder(sb, ItemNames.Focus);
             sb.AppendLine();
 
             if (sr.HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash))
@@ -140,16 +204,16 @@ namespace CondensedSpoilerLogger.Loggers
             {
                 sb.AppendLine("----------Nail Arts:----------");
             }
-            sr.AddItemToStringBuilder(sb, ItemNames.Cyclone_Slash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Great_Slash);
-            sr.AddItemToStringBuilder(sb, ItemNames.Dash_Slash);
+            AddItemToStringBuilder(sb, ItemNames.Cyclone_Slash);
+            AddItemToStringBuilder(sb, ItemNames.Great_Slash);
+            AddItemToStringBuilder(sb, ItemNames.Dash_Slash);
             if (sr.HasRandomizedAny(ItemNames.Leftslash, ItemNames.Rightslash, ItemNames.Upslash, ItemNames.Downslash))
             {
                 sb.AppendLine();
-                sr.AddItemToStringBuilder(sb, ItemNames.Leftslash);
-                sr.AddItemToStringBuilder(sb, ItemNames.Rightslash);
-                sr.AddItemToStringBuilder(sb, ItemNames.Upslash);
-                sr.AddItemToStringBuilder(sb, ItemNames.Downslash);
+                AddItemToStringBuilder(sb, ItemNames.Leftslash);
+                AddItemToStringBuilder(sb, ItemNames.Rightslash);
+                AddItemToStringBuilder(sb, ItemNames.Upslash);
+                AddItemToStringBuilder(sb, ItemNames.Downslash);
             }
             sb.AppendLine();
 
@@ -169,7 +233,7 @@ namespace CondensedSpoilerLogger.Loggers
                     }
                     else
                     {
-                        addedAny |= sr.AddItemToStringBuilder(categorySB, item);
+                        addedAny |= AddItemToStringBuilder(categorySB, item);
                     }
                 }
                 categorySB.AppendLine();
