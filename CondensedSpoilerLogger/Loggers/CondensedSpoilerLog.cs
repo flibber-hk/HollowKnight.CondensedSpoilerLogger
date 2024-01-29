@@ -173,10 +173,14 @@ namespace CondensedSpoilerLogger.Loggers
         /// Create the body of the condensed spoiler log.
         /// </summary>
         /// <param name="writeFunc">Callable that appends a named item to the condensed spoiler.
-        /// Most commonly will be SpoilerReader.AddItemToStringBuilder</param>
+        /// Most commonly will be SpoilerReader.AddItemToStringBuilder.
+        /// 
+        /// This function will automatically respect item grouping.
+        /// </param>
         /// <returns></returns>
         protected string CreateCondensedSpoilerBody(Func<StringBuilder, string, bool?, bool> writeFunc, LogArguments args)
         {
+            // Proxy for sr.AddItemToStringBuilder (which should be the writeFunc) which respects item grouping
             bool AddItemToStringBuilder(StringBuilder localSb, string item, bool forceMulti = false)
             {
                 bool ret = false;
@@ -187,6 +191,7 @@ namespace CondensedSpoilerLogger.Loggers
                 return ret;
             }
 
+            // Proxy for sr.HasRandomizedAny
             bool HasRandomizedAny(params string[] items)
             {
                 StringBuilder miniSb = new();
