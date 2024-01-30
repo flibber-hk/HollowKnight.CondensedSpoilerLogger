@@ -36,6 +36,7 @@ namespace CondensedSpoilerLogger
         public static IEnumerable<CslLogger> CreateLoggers()
         {
             yield return new CondensedSpoilerLog();
+            yield return new MultiworldCondensedSpoilerLog();
             yield return new NotchCostSpoiler();
             yield return new AreaSpoilerLog();
             yield return new ItemGroupSpoiler();
