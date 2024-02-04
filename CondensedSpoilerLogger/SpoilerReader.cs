@@ -85,10 +85,12 @@ namespace CondensedSpoilerLogger
             }
 
             string itemName = item.Name;
+#pragma warning disable CS0618 // Type or member is obsolete
             if (item.item is SplitCloakItem sc)
             {
                 itemName = sc.LeftBiased ? ItemNames.Left_Mothwing_Cloak : ItemNames.Right_Mothwing_Cloak;
             }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             string locationName = pmt.Location.Name;
             string costText = GetCostText(pmt);
@@ -176,8 +178,8 @@ namespace CondensedSpoilerLogger
         private void ApplyMerges()
         {
             MergeItems(ItemNames.Mothwing_Cloak, ItemNames.Shade_Cloak);
-            MergeItems(ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak");
-            MergeItems(ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak");
+            MergeItems(ItemNames.Left_Mothwing_Cloak, "Left_Shade_Cloak", "Left_Biased_Shade_Cloak");
+            MergeItems(ItemNames.Right_Mothwing_Cloak, "Right_Shade_Cloak", "Right_Biased_Shade_Cloak");
 
             MergeItems(ItemNames.Vengeful_Spirit, ItemNames.Shade_Soul);
             MergeItems(ItemNames.Desolate_Dive, ItemNames.Descending_Dark);
