@@ -43,6 +43,9 @@ namespace CondensedSpoilerLogger.Loggers
 
             while (itemPlacements.Count > 0)
             {
+                CondensedSpoilerLogger.instance.Log($"LOGGING PM AT TIME {itemPlacements.Count}");
+                CondensedSpoilerLogger.instance.Log(pm.Dump());
+                
                 List<ItemPlacement> reachable = new();
                 List<ItemPlacement> nonReachable = new();
                 foreach (ItemPlacement pmt in itemPlacements)
