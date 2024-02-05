@@ -60,6 +60,7 @@ namespace CondensedSpoilerLogger.Loggers
                 if (reachable.Count == 0)
                 {
                     CondensedSpoilerLogger.instance.LogError($"Unable to create {nameof(ItemProgressionSpoiler)}: no reachable locations ");
+                    CondensedSpoilerLogger.instance.LogError(pm.Dump());
                     foreach (ItemPlacement pmt in itemPlacements)
                     {
                         CondensedSpoilerLogger.instance.LogError($"- {pmt.Item.Name} @ {pmt.Location.Name}");
