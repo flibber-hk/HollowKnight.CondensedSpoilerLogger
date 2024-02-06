@@ -5,6 +5,7 @@ using Modding;
 using Newtonsoft.Json;
 using RandomizerMod.Logging;
 using RandomizerMod.Menu;
+using RandomizerMod.RandomizerData;
 using RandomizerMod.RC;
 using System;
 using UnityEngine.UI;
@@ -42,8 +43,7 @@ namespace CondensedSpoilerLogger
                 ReflectionHelper.CallMethod(typeof(LogManager), "WriteLogs", args);
                 LogManager.Write((tw) =>
                 {
-                    using JsonTextWriter jtr = new(tw);
-                    RandomizerMod.RandomizerData.JsonUtil._js.Serialize(jtr, rc.ctx);
+                    RandomizerCore.Json.JsonUtil.GetNonLogicSerializer().Serialize(tw, rc.ctx);
                 }, "TempRawSpoiler.json");
                 writtenLogs = true;
                 menuButton.Button.transform.Find("Image").GetComponent<Image>().sprite = CslSpriteManager.GetSprite("Map");
