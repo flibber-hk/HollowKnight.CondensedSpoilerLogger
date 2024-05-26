@@ -12,6 +12,7 @@ There is no guarantee that the order the items appear in this log reflects the o
 Note - the log generated is minimal in the sense that every item is required. However, it is possible that fewer items can be used in a different way;
 for instance, the log may list all stags besides Stag Nest Stag (which unlocks stag access to Stag Nest) and not Stag Nest Stag itself - none
 of these can be removed, even though the number of items in the log can be reduced.
+- SkiploverItemProgressionSpoilerLog: The same as the filtered spoiler, except each sphere includes locations that would be reachable with All skips enabled.
 - CollectedItemSpoiler: Collects locations with the same item and groups them together. Items which appear only once are placed
 at the bottom of the log.
 - CurrencySpoilerLog: Collects randomized currency items (geo, essence) and displays them ordered by amount.
