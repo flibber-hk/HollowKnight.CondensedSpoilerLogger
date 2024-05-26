@@ -31,6 +31,9 @@ namespace CondensedSpoilerLogger.Loggers
             
             List<List<ItemPlacement>> filteredPlacements = FilterImportantPlacements(importantPlacements, args.ctx);
             yield return (LogSpheres(filteredPlacements, args), "FilteredItemProgressionSpoilerLog.txt");
+
+            List<List<ItemPlacement>> skiploverPlacements = ComputeSkiploverPlacements(filteredPlacements, args.ctx);
+            yield return (LogSpheres(skiploverPlacements, args), "SkiploverItemProgressionSpoilerLog.txt");
         }
 
 
@@ -211,6 +214,49 @@ namespace CondensedSpoilerLogger.Loggers
             }
 
             return result;
+        }
+
+        public static List<List<ItemPlacement>> ComputeSkiploverPlacements(List<List<ItemPlacement>> spheredPlacements, RandoModContext ctx)
+        {
+            // TODO: figure out how to enable All skips
+            RCUtil.SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            
+            List<List<ItemPlacement>> skiploverPlacements = new();
+            
+            for (int present = 0; present < spheredPlacements.Count; present++)
+            {
+                List<ItemPlacement> skiploverSphere = new();
+
+                // placements from present & future spheres that are reachable with skips
+                for (int future = present; future < spheredPlacements.Count; future++)
+                {
+                    foreach (ItemPlacement pmt in spheredPlacements[future])
+                    {
+                        bool inPastSpheres = false;
+                        for (int past = 0; past < present; past++)
+                        {
+                            if (skiploverPlacements[past].Contains(pmt))
+                            {
+                                inPastSpheres = true;
+                                break;
+                            }
+                        }
+                        if (!inPastSpheres && pmt.Location.CanGet(pm))
+                        {
+                            skiploverSphere.Add(pmt);
+                        }
+                    }
+                }
+
+                // add present sphere to skiploverPlacements and pm last
+                skiploverPlacements.Add(skiploverSphere);
+                foreach (ItemPlacement pmt in spheredPlacements[present])
+                {
+                    pm.Add(pmt.Item, pmt.Location);
+                }
+            }
+            
+            return skiploverPlacements;
         }
 
         public static ItemPlacement[] GetOrderedPlacements(RandoModContext ctx)
