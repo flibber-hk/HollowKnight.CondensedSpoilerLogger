@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using RandomizerMod.Logging;
 using RandomizerMod.RC;
+using RandomizerMod.Settings;
 using RandomizerCore;
 using RandomizerCore.Logic;
 using RandomizerCore.Randomization;
@@ -218,8 +219,16 @@ namespace CondensedSpoilerLogger.Loggers
 
         public static List<List<ItemPlacement>> ComputeSkiploverPlacements(List<List<ItemPlacement>> spheredPlacements, RandoModContext ctx)
         {
-            // TODO: figure out how to enable All skips
-            RCUtil.SetupPM(ctx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
+            // enable All skips
+            GenerationSettings foolishGS = ctx.GenerationSettings.Clone() as GenerationSettings;
+            foolishGS.SkipSettings = RandomizerMod.Settings.Presets.SkipPresetData.Foolish.Clone() as SkipSettings;
+            foolishGS.Clamp();
+            RandoModContext foolishCtx = new(foolishGS, ctx.StartDef);
+            foolishCtx.notchCosts = ctx.notchCosts.ToList();
+            foolishCtx.itemPlacements = ctx.itemPlacements.ToList();
+            foolishCtx.transitionPlacements = ctx.transitionPlacements.ToList();
+            foolishCtx.Vanilla = ctx.Vanilla.ToList();
+            RCUtil.SetupPM(foolishCtx, out LogicManager lm, out ProgressionManager pm, out MainUpdater mu);
             
             List<List<ItemPlacement>> skiploverPlacements = new();
             
